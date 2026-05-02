@@ -1,18 +1,48 @@
 'use client';
 
+import * as NavigationMenu from '@radix-ui/react-navigation-menu';
+
 export function Navigation() {
   return (
-    <nav className="fixed left-0 top-0 z-40 h-screen w-24 border-r border-black/15 bg-white/70 backdrop-blur-sm pointer-events-none md:w-28">
-      <div className="flex h-full flex-col items-center justify-between py-8">
-        <div className="font-serif text-2xl italic leading-none text-black md:text-3xl">VS</div>
-        <div
-          className="font-serif text-[0.72rem] uppercase tracking-[0.32em] text-black md:text-xs"
-          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-        >
-          Vasavi Sridhar
-        </div>
-        <div className="h-16 w-px bg-black/30" />
-      </div>
-    </nav>
+    <NavigationMenu.Root
+      className="site-nav"
+      aria-label="Primary navigation"
+    >
+      <NavigationMenu.List className="page-shell site-nav__inner p-0">
+        <NavigationMenu.Item className="m-0 justify-self-start p-0">
+          <NavigationMenu.Link asChild>
+            <a
+              href="#top"
+              className="site-nav__brand transition-opacity hover:opacity-70"
+              aria-label="Vasavi Sridhar home"
+            >
+              Vasavi Sridhar
+            </a>
+          </NavigationMenu.Link>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item className="site-nav__tagline-item m-0 justify-self-center p-0">
+          <span className="site-nav__tagline">
+            Material futures shaped through living systems.
+          </span>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item className="m-0 justify-self-end p-0">
+          <div className="site-nav__actions">
+            <NavigationMenu.Link asChild>
+              <a
+                href="mailto:hello@example.com"
+                className="site-nav__pill site-nav__pill--primary"
+              >
+                Let&apos;s Talk
+              </a>
+            </NavigationMenu.Link>
+            <NavigationMenu.Trigger className="site-nav__pill site-nav__pill--secondary">
+              Menu
+            </NavigationMenu.Trigger>
+          </div>
+        </NavigationMenu.Item>
+      </NavigationMenu.List>
+    </NavigationMenu.Root>
   );
 }

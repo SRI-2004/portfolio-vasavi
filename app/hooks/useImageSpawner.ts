@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react';
 import gsap from 'gsap';
+import { introConfig } from '@/app/config/introConfig';
 
 export interface TrailImageState {
   active: boolean;
@@ -9,23 +10,25 @@ export interface TrailImageState {
   scale: number;
   scatterAngle: number;
   scatterDistance: number;
+  scatterX?: number;
+  scatterY?: number;
   depth: number;
   tilt: number;
 }
 
 interface UseImageSpawnerOptions {
   imagesRef: React.RefObject<HTMLDivElement | null>;
+  boundsRef?: React.RefObject<HTMLElement | null>;
   trailStateRef: React.MutableRefObject<TrailImageState[]>;
   scrollProgressRef: React.MutableRefObject<number>;
-  spawnThreshold?: number;
   maxImages: number;
 }
 
 export function useImageSpawner({
   imagesRef,
+  boundsRef,
   trailStateRef,
   scrollProgressRef,
-  spawnThreshold = 30,
   maxImages,
 }: UseImageSpawnerOptions) {
   const lastSpawnPos = useRef({ x: 0, y: 0 });
@@ -34,29 +37,40 @@ export function useImageSpawner({
 
   const spawnImage = useCallback(
     (x: number, y: number) => {
-      if (scrollProgressRef.current >= 0.85) {
+      if (scrollProgressRef.current >= introConfig.pointerTrail.progressCutoff) {
+        return;
+      }
+
+      const bounds = boundsRef?.current?.getBoundingClientRect();
+      const localX = bounds ? x - bounds.left : x;
+      const localY = bounds ? y - bounds.top : y;
+
+      if (bounds && (localX < 0 || localY < 0 || localX > bounds.width || localY > bounds.height)) {
         return;
       }
 
       const lastX = lastSpawnPos.current.x;
       const lastY = lastSpawnPos.current.y;
-      const distance = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2));
+      const distance = Math.sqrt(Math.pow(localX - lastX, 2) + Math.pow(localY - lastY, 2));
 
-      if ((hasSpawnedRef.current && distance < spawnThreshold) || !imagesRef.current) {
+      if (
+        (hasSpawnedRef.current && distance < introConfig.pointerTrail.spawnThreshold) ||
+        !imagesRef.current
+      ) {
         return;
       }
 
-      lastSpawnPos.current = { x, y };
+      lastSpawnPos.current = { x: localX, y: localY };
       hasSpawnedRef.current = true;
 
-      const elements = imagesRef.current.querySelectorAll<HTMLElement>('[data-spawner]');
+      const elements = imagesRef.current.querySelectorAll<HTMLElement>('[data-pointer-card]');
       const index = currentIndexRef.current;
       const element = elements[index];
 
       if (element) {
-        const viewportXCenter = window.innerWidth / 2;
-        const viewportYCenter = window.innerHeight / 2;
-        const pointerAngle = Math.atan2(y - viewportYCenter, x - viewportXCenter);
+        const width = bounds?.width ?? window.innerWidth;
+        const height = bounds?.height ?? window.innerHeight;
+        const pointerAngle = Math.atan2(localY - height / 2, localX - width / 2);
         const fallbackAngle = (index / Math.max(maxImages, 1)) * Math.PI * 2;
         const scatterAngle = Number.isFinite(pointerAngle)
           ? pointerAngle + (Math.random() - 0.5) * 0.85
@@ -66,20 +80,20 @@ export function useImageSpawner({
 
         trailStateRef.current[index] = {
           active: true,
-          baseX: x,
-          baseY: y,
+          baseX: localX,
+          baseY: localY,
           rotation,
           scale,
           scatterAngle,
-          scatterDistance: 620 + Math.random() * 420,
+          scatterDistance: 360 + Math.random() * 360,
           depth: -260 + Math.random() * 620,
           tilt: 10 + Math.random() * 20,
         };
 
         gsap.killTweensOf(element);
         gsap.set(element, {
-          x,
-          y,
+          x: localX,
+          y: localY,
           xPercent: -50,
           yPercent: -50,
           z: 0,
@@ -111,7 +125,7 @@ export function useImageSpawner({
 
       currentIndexRef.current = (currentIndexRef.current + 1) % maxImages;
     },
-    [imagesRef, maxImages, scrollProgressRef, spawnThreshold, trailStateRef]
+    [boundsRef, imagesRef, maxImages, scrollProgressRef, trailStateRef]
   );
 
   return { spawnImage };
