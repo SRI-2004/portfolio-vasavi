@@ -12,15 +12,14 @@ interface IntroTrailSectionProps {
 }
 
 const ABOUT_LINES = [
-  'Vasavi Sridhar is a inter-disciplinary design futurist, whose practice seamlessly integrates biodesign, material innovation, and systems design.',
-  'Her unique approach combines digital and hands-on techniques,',
+  'Vasavi Sridhar is an inter-disciplinary designer whose practice seamlessly integrates emerging materials, textile systems, and sustainable strategies.',
+  'Her unique approach is research-led, weaving biodesign, material innovation, and fashion, anchored by a strong foundation in visual storytelling.',
 ];
 
 export function IntroTrailSection({ images }: IntroTrailSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const introCopyRef = useRef<HTMLDivElement>(null);
   const stageGridRef = useRef<HTMLDivElement>(null);
   const stageGlowRef = useRef<HTMLDivElement>(null);
   const pointerImagesRef = useRef<HTMLDivElement>(null);
@@ -78,7 +77,6 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
     sectionRef,
     frameRef,
     heroRef: stageRef,
-    introCopyRef,
     stageGridRef,
     stageGlowRef,
     pointerImagesRef,
@@ -96,15 +94,6 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
         className="intro-frame"
       >
         <div className="page-shell intro-stack">
-          <div
-            ref={introCopyRef}
-            className="intro-caption"
-          >
-            <p>
-              Biodesign, material innovation, and immersive systems research.
-            </p>
-          </div>
-
           <div className="intro-stage-wrap">
             <div
               ref={stageRef}
@@ -158,17 +147,34 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
         </div>
 
         <div
+          id="about"
           ref={textRef}
-          className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-[var(--page-gutter)] text-[#191919]"
-          style={isDisabled ? { opacity: 1 } : { opacity: 0, transform: 'translateY(28px)' }}
+          className={`about-transition pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-[var(--page-gutter)] text-white${isDisabled ? ' about-transition--static' : ''}`}
+          style={isDisabled ? { opacity: 1, transform: 'none' } : { opacity: 0, transform: 'translateY(28px)' }}
         >
-          <div className="max-w-5xl py-4 text-center">
-            <p className="text-[clamp(1.85rem,3vw,3.8rem)] font-medium leading-[1.04]">
-              {ABOUT_LINES[0]}
-            </p>
-            <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-[#191919]/62 md:text-lg">
-              {ABOUT_LINES[1]}
-            </p>
+          <div className="about-reveal">
+            <div className="about-copy" data-about-copy>
+              <p className="about-kicker" data-about-line>
+                About
+              </p>
+              <p className="about-heading" data-about-line>
+                {ABOUT_LINES[0]}
+              </p>
+              <p className="about-support" data-about-line>
+                {ABOUT_LINES[1]}
+              </p>
+              <a className="resume-button pointer-events-auto" href="/resume.pdf" download data-about-action>
+                RESUME
+              </a>
+            </div>
+
+            <div className="about-image-wrap" data-about-image>
+              <img
+                src="/images/about-crystal-dress.svg"
+                alt="Crystal and black sculptural textile form"
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
       </div>

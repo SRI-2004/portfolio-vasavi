@@ -8,7 +8,6 @@ interface UseHeroTimelineOptions {
   sectionRef: React.RefObject<HTMLElement | null>;
   frameRef?: React.RefObject<HTMLDivElement | null>;
   heroRef: React.RefObject<HTMLDivElement | null>;
-  introCopyRef?: React.RefObject<HTMLDivElement | null>;
   stageGridRef?: React.RefObject<HTMLDivElement | null>;
   stageGlowRef?: React.RefObject<HTMLDivElement | null>;
   pointerImagesRef: React.RefObject<HTMLDivElement | null>;
@@ -23,7 +22,6 @@ export function useHeroTimeline({
   sectionRef,
   frameRef,
   heroRef,
-  introCopyRef,
   stageGridRef,
   stageGlowRef,
   pointerImagesRef,
@@ -49,7 +47,6 @@ export function useHeroTimeline({
     const section = sectionRef.current;
     const frame = frameRef?.current;
     const hero = heroRef.current;
-    const introCopy = introCopyRef?.current;
     const stageGrid = stageGridRef?.current;
     const stageGlow = stageGlowRef?.current;
     const pointerImagesWrapper = pointerImagesRef.current;
@@ -60,6 +57,12 @@ export function useHeroTimeline({
       const pointerImageElements = Array.from(
         pointerImagesWrapper.querySelectorAll<HTMLElement>('[data-pointer-card]')
       );
+      const aboutLineElements = Array.from(
+        text.querySelectorAll<HTMLElement>('[data-about-line]')
+      );
+      const aboutCopy = text.querySelector<HTMLElement>('[data-about-copy]');
+      const aboutImage = text.querySelector<HTMLElement>('[data-about-image]');
+      const aboutAction = text.querySelector<HTMLElement>('[data-about-action]');
 
       const render = (progress: number) => {
         scrollProgressRef.current = progress;
@@ -81,21 +84,36 @@ export function useHeroTimeline({
           1,
           (progress - timeline.textRevealStart) / timeline.textRevealDuration
         );
-        const textHold = gsap.utils.clamp(
-          0,
-          1,
-          (progress - timeline.textHoldStart) / timeline.textHoldDuration
-        );
         const chromeFade = gsap.utils.clamp(
           0,
           1,
           (progress - timeline.chromeFadeStart) / timeline.chromeFadeDuration
         );
-        const introFade = gsap.utils.clamp(
+        const blackReveal = gsap.utils.clamp(
           0,
           1,
-          (progress - timeline.introFadeStart) / timeline.introFadeDuration
+          (progress - timeline.blackStart) / timeline.blackDuration
         );
+        const imageReveal = gsap.utils.clamp(
+          0,
+          1,
+          (progress - timeline.imageRevealStart) / timeline.imageRevealDuration
+        );
+        const imageSettle = gsap.utils.clamp(
+          0,
+          1,
+          (progress - timeline.imageSettleStart) / timeline.imageSettleDuration
+        );
+
+        if (frame) {
+          gsap.set(frame, {
+            backgroundColor: gsap.utils.interpolate('#EFEDEA', '#191919', blackReveal),
+          });
+        }
+
+        gsap.set(section, {
+          backgroundColor: gsap.utils.interpolate('#EFEDEA', '#191919', blackReveal),
+        });
 
         gsap.set(hero, {
           scale: 1 + depth * 0.04 + chromeFade * 0.035,
@@ -107,13 +125,6 @@ export function useHeroTimeline({
           boxShadow: `0 ${26 * (1 - chromeFade)}px ${80 * (1 - chromeFade)}px rgba(25,25,25,${0.08 * (1 - chromeFade)})`,
           transformPerspective: 1400,
         });
-
-        if (introCopy) {
-          gsap.set(introCopy, {
-            opacity: 1 - introFade,
-            y: -introFade * 18,
-          });
-        }
 
         if (stageGrid) {
           gsap.set(stageGrid, {
@@ -133,50 +144,89 @@ export function useHeroTimeline({
           opacity = 0.92
         ) => {
           elements.forEach((img, index) => {
-          const state = states.current[index];
-          if (!state?.active) {
-            gsap.set(img, { opacity: 0 });
-            return;
-          }
+            const state = states.current[index];
+            if (!state?.active) {
+              gsap.set(img, { opacity: 0 });
+              return;
+            }
 
-          const targetScatterX =
-            state.scatterX ?? Math.cos(state.scatterAngle) * state.scatterDistance;
-          const targetScatterY =
-            state.scatterY ?? Math.sin(state.scatterAngle) * state.scatterDistance;
-          const scatterX = targetScatterX * disperse * timeline.scatterMultiplier;
-          const scatterY = targetScatterY * disperse * timeline.scatterMultiplier;
-          const z = state.depth * (0.35 + depth * 0.95) + (index - 2) * 110 * depth;
-          const depthScale = gsap.utils.clamp(
-            0.56,
-            1.42,
-            state.scale + depth * 0.18 + (z / 1300) * disperse
-          );
+            const targetScatterX =
+              state.scatterX ?? Math.cos(state.scatterAngle) * state.scatterDistance;
+            const targetScatterY =
+              state.scatterY ?? Math.sin(state.scatterAngle) * state.scatterDistance;
+            const scatterX = targetScatterX * disperse * timeline.scatterMultiplier;
+            const scatterY = targetScatterY * disperse * timeline.scatterMultiplier;
+            const z = state.depth * (0.35 + depth * 0.95) + (index - 2) * 110 * depth;
+            const depthScale = gsap.utils.clamp(
+              0.56,
+              1.42,
+              state.scale + depth * 0.18 + (z / 1300) * disperse
+            );
 
-          gsap.set(img, {
-            x: state.baseX + scatterX,
-            y: state.baseY + scatterY,
-            xPercent: -50,
-            yPercent: -50,
-            z,
-            rotationX: state.tilt * (depth + disperse * 0.75),
-            rotationY: -state.tilt * 0.8 * (depth + disperse * 0.6),
-            rotationZ: state.rotation + state.tilt * 0.42 * disperse,
-            scale: depthScale,
-            opacity: opacity * (1 - fade),
-            filter: `blur(${Math.abs(z) * 0.004 * depth + fade * 5}px)`,
-            transformPerspective: 1400,
-            transformOrigin: '50% 50%',
-          });
+            gsap.set(img, {
+              x: state.baseX + scatterX,
+              y: state.baseY + scatterY,
+              xPercent: -50,
+              yPercent: -50,
+              z,
+              rotationX: state.tilt * (depth + disperse * 0.75),
+              rotationY: -state.tilt * 0.8 * (depth + disperse * 0.6),
+              rotationZ: state.rotation + state.tilt * 0.42 * disperse,
+              scale: depthScale,
+              opacity: opacity * (1 - fade),
+              filter: `blur(${Math.abs(z) * 0.004 * depth + fade * 5}px)`,
+              transformPerspective: 1400,
+              transformOrigin: '50% 50%',
+            });
           });
         };
 
         renderCards(pointerImageElements, pointerTrailStateRef, 0.82);
 
         gsap.set(text, {
-          opacity: textReveal,
-          y: (1 - textReveal) * 18 - textHold * 6,
-          scale: 0.985 + textReveal * 0.015,
+          opacity: imageReveal,
+          y: (1 - imageReveal) * 18,
+          scale: 1,
+          force3D: false,
         });
+
+        if (aboutImage) {
+          gsap.set(aboutImage, {
+            opacity: imageReveal,
+            x: `${(1 - imageSettle) * -28}vw`,
+            y: (1 - imageReveal) * 16,
+            scale: 1.42 - imageSettle * 0.42,
+            filter: `blur(${(1 - imageReveal) * 8}px)`,
+          });
+        }
+
+        if (aboutCopy) {
+          gsap.set(aboutCopy, {
+            opacity: textReveal,
+            y: (1 - textReveal) * 24,
+          });
+        }
+
+        aboutLineElements.forEach((line, index) => {
+          const lineReveal = gsap.utils.clamp(0, 1, (textReveal - index * 0.12) / 0.76);
+
+          gsap.set(line, {
+            opacity: lineReveal,
+            y: (1 - lineReveal) * 18,
+            filter: `blur(${(1 - lineReveal) * 5}px)`,
+          });
+        });
+
+        if (aboutAction) {
+          const actionReveal = gsap.utils.clamp(0, 1, (textReveal - 0.32) / 0.58);
+
+          gsap.set(aboutAction, {
+            opacity: actionReveal,
+            y: (1 - actionReveal) * 12,
+            filter: 'none',
+            force3D: false,
+          });
+        }
 
         if (scrollLabel) {
           const scrollLabelFade = gsap.utils.clamp(
@@ -215,7 +265,6 @@ export function useHeroTimeline({
     sectionRef,
     frameRef,
     heroRef,
-    introCopyRef,
     stageGridRef,
     stageGlowRef,
     pointerImagesRef,

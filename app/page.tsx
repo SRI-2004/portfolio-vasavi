@@ -1,6 +1,5 @@
 import { Navigation } from '@/app/components/Navigation';
 import { IntroTrailSection } from '@/app/components/IntroTrailSection';
-import { AnimatedLineBackground } from '@/app/components/AnimatedLineBackground';
 import { PortfolioSections } from '@/app/components/PortfolioSections';
 
 const TRAIL_IMAGES = [
@@ -14,7 +13,6 @@ const TRAIL_IMAGES = [
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#EFEDEA]">
-      <AnimatedLineBackground />
       <Navigation />
       <IntroTrailSection images={TRAIL_IMAGES} />
       <PortfolioSections />

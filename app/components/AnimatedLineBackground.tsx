@@ -16,6 +16,9 @@ export function AnimatedLineBackground() {
         window.scrollY / Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
       ref.current?.style.setProperty('--line-shift', `${progress * 180}px`);
       ref.current?.style.setProperty('--line-rotate', `${-10 + progress * 22}deg`);
+      ref.current?.style.setProperty('--line-rise', `${progress * 36}px`);
+      ref.current?.style.setProperty('--line-width-bump', `${progress * 18}vw`);
+      ref.current?.style.setProperty('--line-height-bump', `${progress * 14}vh`);
       frame = requestAnimationFrame(update);
     };
 
