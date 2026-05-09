@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title">
+  <title id="title">Blue water sculpture placeholder</title>
+  <defs>
+    <radialGradient id="g" cx="52%" cy="35%" r="65%">
+      <stop offset="0" stop-color="#f2f7f8"/>
+      <stop offset=".52" stop-color="#9aa9b1"/>
+      <stop offset="1" stop-color="#0c1729"/>
+    </radialGradient>
+    <linearGradient id="water" x1="0" x2="1">
+      <stop offset="0" stop-color="#06101e"/>
+      <stop offset=".5" stop-color="#244a77"/>
+      <stop offset="1" stop-color="#06101e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="780" fill="url(#g)"/>
+  <rect y="480" width="1200" height="300" fill="url(#water)"/>
+  <g fill="none" stroke="#6ca3d1" stroke-width="8" opacity=".75">
+    <ellipse cx="600" cy="555" rx="220" ry="34"/>
+    <ellipse cx="600" cy="596" rx="300" ry="46"/>
+    <ellipse cx="600" cy="650" rx="430" ry="60"/>
+  </g>
+  <path d="M612 145c-74 86-152 228-90 310 44 58 131 21 112-56-12-49-76-76-58-140 9-35 31-75 36-114z" fill="#173e83" opacity=".9"/>
+  <path d="M662 140c78 98 122 223 47 303-50 53-117 32-103-41 12-62 78-81 56-166-9-34-13-67 0-96z" fill="#061a3d" opacity=".96"/>
+  <path d="M625 175c10 128-2 238-48 324" fill="none" stroke="#dbe9ff" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="620" cy="132" r="33" fill="#342064"/>
+</svg>

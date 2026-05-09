@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title">
+  <title id="title">Biomaterial samples placeholder</title>
+  <rect width="1200" height="780" fill="#f3f0ea"/>
+  <g opacity=".95">
+    <path d="M0 0h470L320 280 0 238z" fill="#88a94e"/>
+    <path d="M150 735 410 520 560 780H0z" fill="#c3843e"/>
+    <path d="M850 80h260l70 190-310 22z" fill="#e5ae2e"/>
+  </g>
+  <g>
+    <circle cx="190" cy="425" r="92" fill="#d8b374"/>
+    <circle cx="190" cy="425" r="70" fill="#8b5b24"/>
+    <circle cx="490" cy="180" r="103" fill="#e4d3b9"/>
+    <circle cx="490" cy="180" r="73" fill="#a96d22"/>
+    <circle cx="470" cy="390" r="118" fill="#151515"/>
+    <circle cx="730" cy="430" r="95" fill="#c21f16"/>
+    <circle cx="875" cy="315" r="82" fill="#006d41"/>
+    <circle cx="1015" cy="500" r="118" fill="#b66a27"/>
+  </g>
+  <g opacity=".24" fill="none" stroke="#111" stroke-width="5">
+    <circle cx="190" cy="425" r="110"/>
+    <circle cx="490" cy="180" r="122"/>
+    <circle cx="730" cy="430" r="113"/>
+    <circle cx="875" cy="315" r="99"/>
+    <circle cx="1015" cy="500" r="137"/>
+  </g>
+</svg>

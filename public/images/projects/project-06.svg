@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title">
+  <title id="title">Systems field notes placeholder</title>
+  <rect width="1200" height="780" fill="#efecea"/>
+  <g fill="none" stroke="#111" stroke-width="4" opacity=".45">
+    <path d="M120 145h960M120 265h960M120 385h960M120 505h960M120 625h960"/>
+    <path d="M210 80v620M420 80v620M630 80v620M840 80v620M1050 80v620"/>
+  </g>
+  <g fill="#111">
+    <circle cx="210" cy="265" r="20"/>
+    <circle cx="420" cy="385" r="20"/>
+    <circle cx="630" cy="145" r="20"/>
+    <circle cx="840" cy="505" r="20"/>
+    <circle cx="1050" cy="265" r="20"/>
+  </g>
+  <path d="M210 265 420 385 630 145 840 505 1050 265" fill="none" stroke="#0755bb" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { getFeaturedProjects, getProjectMeta, type Project } from '@/app/data/projects';
 import { prefersReducedMotion } from '@/app/utils/helpers';
 
 const awardsIntro =
@@ -59,40 +60,64 @@ const logos = [
   { name: 'Sample logo 04', src: '/images/logos/sample-logo-04.svg' },
 ];
 
-const projects = [
-  {
-    slug: 'living-material-atlas',
-    title: 'Living Material Atlas',
-    meta: 'BIO DESIGN • RESEARCH • SYSTEMS',
-    image: 'linear-gradient(135deg, #191919 0%, #26323f 42%, #0755BB 100%)',
-  },
-  {
-    slug: 'circular-craft-lab',
-    title: 'Circular Craft Lab',
-    meta: 'MATERIALS • WORKSHOPS • STRATEGY',
-    image: 'linear-gradient(135deg, #EFEDEA 0%, #c8c4bd 45%, #191919 100%)',
-  },
-  {
-    slug: 'bio-interface-study',
-    title: 'Bio Interface Study',
-    meta: 'INTERACTION • SPECULATION • VISUALS',
-    image: 'radial-gradient(circle at 30% 30%, #0755BB, transparent 34%), linear-gradient(135deg, #191919, #EFEDEA)',
-  },
-  {
-    slug: 'systems-field-notes',
-    title: 'Systems Field Notes',
-    meta: 'FIELDWORK • MAPPING • FUTURES',
-    image: 'linear-gradient(145deg, #191919 0%, #4a4a45 52%, #EFEDEA 100%)',
-  },
-];
-
 const portfolioMotion = {
   revealDuration: 1.15,
   ease: 'power2.out',
 };
 
+const HOME_PROJECT_LIMIT = 4;
+const DESKTOP_VISIBLE_PROJECTS = 2;
+const MOBILE_VISIBLE_PROJECTS = 1;
+
+function ProjectCard({ project, index, className = '' }: { project: Project; index?: number; className?: string }) {
+  return (
+    <Link href={`/projects/${project.slug}`} className={`project-card ${className}`} data-project-card-index={index}>
+      <img className="project-thumb" src={project.cardImage.src} alt="" draggable={false} data-project-image />
+      <p className="project-meta" data-project-text>{getProjectMeta(project)}</p>
+      <h3 className="project-name" data-project-text>{project.title}</h3>
+    </Link>
+  );
+}
+
 export function PortfolioSections() {
   const rootRef = useRef<HTMLElement>(null);
+  const projectWindowRef = useRef<HTMLDivElement>(null);
+  const homeProjects = useMemo(() => getFeaturedProjects(HOME_PROJECT_LIMIT), []);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const [visibleProjects, setVisibleProjects] = useState(DESKTOP_VISIBLE_PROJECTS);
+  const maxProjectIndex = Math.max(0, homeProjects.length - visibleProjects);
+  const isAtFirstProject = activeProjectIndex <= 0;
+  const isAtLastProject = activeProjectIndex >= maxProjectIndex;
+  const carouselStyle = {
+    '--project-visible': visibleProjects,
+  } as CSSProperties;
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px)');
+    const updateVisibleProjects = () => {
+      setVisibleProjects(media.matches ? DESKTOP_VISIBLE_PROJECTS : MOBILE_VISIBLE_PROJECTS);
+    };
+
+    updateVisibleProjects();
+    media.addEventListener('change', updateVisibleProjects);
+    return () => media.removeEventListener('change', updateVisibleProjects);
+  }, []);
+
+  useEffect(() => {
+    setActiveProjectIndex((currentIndex) => Math.min(currentIndex, maxProjectIndex));
+  }, [maxProjectIndex]);
+
+  useEffect(() => {
+    const projectWindow = projectWindowRef.current;
+    const targetProject = projectWindow?.querySelector<HTMLElement>(`[data-project-card-index="${activeProjectIndex}"]`);
+
+    if (!projectWindow || !targetProject) return;
+
+    projectWindow.scrollTo({
+      left: targetProject.offsetLeft,
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+    });
+  }, [activeProjectIndex]);
 
   useEffect(() => {
     if (prefersReducedMotion() || !rootRef.current) return;
@@ -155,7 +180,7 @@ export function PortfolioSections() {
         duration: 1.05,
         ease: portfolioMotion.ease,
         scrollTrigger: {
-          trigger: '[data-project-grid]',
+          trigger: '[data-project-carousel]',
           start: 'top 76%',
         },
       });
@@ -167,7 +192,7 @@ export function PortfolioSections() {
         duration: 0.95,
         ease: portfolioMotion.ease,
         scrollTrigger: {
-          trigger: '[data-project-grid]',
+          trigger: '[data-project-carousel]',
           start: 'top 70%',
         },
       });
@@ -221,27 +246,47 @@ export function PortfolioSections() {
         </div>
       </section>
 
-      <section id="projects" className="content-band featured-section" data-feature-section>
-        <div className="grid gap-6 md:grid-cols-[1fr_0.45fr] md:items-end">
-          <h2 className="featured-heading" data-feature-copy>Featured Work</h2>
-          <p className="featured-copy" data-feature-copy>
-            Placeholder project tiles for biodesign, material research, and future-facing visual systems.
-          </p>
-        </div>
+      <section id="projects" className="content-band work-section" data-feature-section>
+        <h2 className="work-heading" data-feature-copy>WORK</h2>
 
-        <div className="project-grid" data-project-grid>
-          {projects.map((project) => (
-            <Link key={project.slug} href={`/projects/${project.slug}`} className="project-tile">
-              <div className="project-image" data-project-image style={{ background: project.image }}>
-                <span />
-              </div>
-              <p data-project-text>{project.meta}</p>
-              <h3 data-project-text className="project-title">
-                <span className="project-title-arrow" aria-hidden="true">→</span>
-                <span>{project.title}</span>
-              </h3>
-            </Link>
-          ))}
+        <div className="project-carousel" data-project-carousel style={carouselStyle}>
+          <div className="project-window" ref={projectWindowRef}>
+            <div className="project-track">
+              {homeProjects.map((project, index) => (
+                <ProjectCard key={project.slug} project={project} index={index} />
+              ))}
+            </div>
+          </div>
+
+          <div className="project-edge project-edge--left" aria-hidden={isAtFirstProject}>
+            {!isAtFirstProject && (
+              <button
+                className="project-control"
+                type="button"
+                aria-label="Previous projects"
+                onClick={() => setActiveProjectIndex((currentIndex) => Math.max(0, currentIndex - 1))}
+              >
+                ←
+              </button>
+            )}
+          </div>
+
+          <div className="project-edge project-edge--right">
+            {isAtLastProject ? (
+              <Link className="project-control project-control--more" href="/projects">
+                See more
+              </Link>
+            ) : (
+              <button
+                className="project-control"
+                type="button"
+                aria-label="Next projects"
+                onClick={() => setActiveProjectIndex((currentIndex) => Math.min(maxProjectIndex, currentIndex + 1))}
+              >
+                →
+              </button>
+            )}
+          </div>
         </div>
       </section>
       <div id="contact" className="h-px" aria-hidden="true" />

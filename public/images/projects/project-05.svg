@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title">
+  <title id="title">Interface study placeholder</title>
+  <rect width="1200" height="780" fill="#121416"/>
+  <g fill="none" stroke-width="3">
+    <path d="M0 410c150-92 270-93 360-2s210 90 360-2 270-93 480-1" stroke="#77b7ff" opacity=".8"/>
+    <path d="M0 500c150-92 270-93 360-2s210 90 360-2 270-93 480-1" stroke="#efe8d8" opacity=".5"/>
+    <path d="M0 590c150-92 270-93 360-2s210 90 360-2 270-93 480-1" stroke="#77b7ff" opacity=".45"/>
+  </g>
+  <circle cx="600" cy="350" r="165" fill="#0d56b1" opacity=".6"/>
+  <circle cx="600" cy="350" r="92" fill="#efe8d8"/>
+  <circle cx="600" cy="350" r="46" fill="#121416"/>
+</svg>

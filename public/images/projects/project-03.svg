@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" role="img" aria-labelledby="title">
+  <title id="title">Material field study placeholder</title>
+  <rect width="1200" height="780" fill="#d9d7ca"/>
+  <path d="M0 610c205-120 392-123 560-12 190 125 398 111 640-42v224H0z" fill="#38493c"/>
+  <path d="M120 90h350v250H120z" fill="#f5eee2"/>
+  <path d="M595 145h440v380H595z" fill="#202722"/>
+  <g fill="none" stroke="#a8ba8b" stroke-width="10">
+    <path d="M180 285c68-90 145-96 228-18"/>
+    <path d="M660 430c108-140 214-160 318-62"/>
+    <path d="M692 500c70-80 152-90 245-30"/>
+  </g>
+  <g fill="#7f9e4c">
+    <circle cx="265" cy="210" r="48"/>
+    <circle cx="740" cy="265" r="68"/>
+    <circle cx="905" cy="325" r="44"/>
+  </g>
+</svg>
