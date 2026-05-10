@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Navigation } from '@/app/components/Navigation';
+import { getProjectBySlug } from '@/app/data/projectQueries';
 import {
-  getProjectBySlug,
-  sortedProjects,
   type Project,
   type ProjectImage,
   type ProjectMediaBlock,
@@ -14,17 +13,11 @@ type ProjectPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return sortedProjects.map((project) => ({
-    slug: project.slug,
-  }));
-}
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return {
@@ -153,7 +146,7 @@ function getRenderableMedia(project: Project) {
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) notFound();
 

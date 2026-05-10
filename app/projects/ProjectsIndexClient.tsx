@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { getProjectMeta, projectTags, sortedProjects, type ProjectTag } from '@/app/data/projects';
+import { getProjectMeta, projectTags, type Project, type ProjectTag } from '@/app/data/projects';
 
 type FilterValue = 'All' | ProjectTag;
 
@@ -13,22 +13,22 @@ function isProjectTag(filter: FilterValue): filter is ProjectTag {
   return filter !== allFilter;
 }
 
-export function ProjectsIndexClient() {
+export function ProjectsIndexClient({ projects }: { projects: Project[] }) {
   const [activeFilter, setActiveFilter] = useState<FilterValue>(allFilter);
 
   const tagCounts = useMemo(() => {
     return filters.reduce<Record<FilterValue, number>>((counts, filter) => {
       counts[filter] = isProjectTag(filter)
-        ? sortedProjects.filter((project) => project.tags.includes(filter)).length
-        : sortedProjects.length;
+        ? projects.filter((project) => project.tags.includes(filter)).length
+        : projects.length;
       return counts;
     }, {} as Record<FilterValue, number>);
-  }, []);
+  }, [projects]);
 
   const visibleProjects = useMemo(() => {
-    if (!isProjectTag(activeFilter)) return sortedProjects;
-    return sortedProjects.filter((project) => project.tags.includes(activeFilter));
-  }, [activeFilter]);
+    if (!isProjectTag(activeFilter)) return projects;
+    return projects.filter((project) => project.tags.includes(activeFilter));
+  }, [activeFilter, projects]);
 
   return (
     <>
@@ -47,15 +47,24 @@ export function ProjectsIndexClient() {
         ))}
       </div>
 
-      <div className="projects-grid-page">
-        {visibleProjects.map((project) => (
-          <Link href={`/projects/${project.slug}`} className="project-card project-card--grid" key={project.slug}>
-            <img className="project-thumb" src={project.cardImage.src} alt={project.cardImage.alt} draggable={false} />
-            <p className="project-meta">{getProjectMeta(project)}</p>
-            <h2 className="project-name">{project.title}</h2>
-          </Link>
-        ))}
-      </div>
+      {visibleProjects.length ? (
+        <div className="projects-grid-page">
+          {visibleProjects.map((project) => (
+            <Link href={`/projects/${project.slug}`} className="project-card project-card--grid" key={project.slug}>
+              <img
+                className="project-thumb"
+                src={project.cardImage.src}
+                alt={project.cardImage.alt}
+                draggable={false}
+              />
+              <p className="project-meta">{getProjectMeta(project)}</p>
+              <h2 className="project-name">{project.title}</h2>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="project-empty">No published projects found.</p>
+      )}
     </>
   );
 }

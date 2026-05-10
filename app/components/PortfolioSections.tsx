@@ -4,7 +4,7 @@ import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { getFeaturedProjects, getProjectMeta, type Project } from '@/app/data/projects';
+import { getProjectMeta, type Project } from '@/app/data/projects';
 import { prefersReducedMotion } from '@/app/utils/helpers';
 
 const awardsIntro =
@@ -65,7 +65,6 @@ const portfolioMotion = {
   ease: 'power2.out',
 };
 
-const HOME_PROJECT_LIMIT = 4;
 const DESKTOP_VISIBLE_PROJECTS = 2;
 const MOBILE_VISIBLE_PROJECTS = 1;
 
@@ -79,10 +78,10 @@ function ProjectCard({ project, index, className = '' }: { project: Project; ind
   );
 }
 
-export function PortfolioSections() {
+export function PortfolioSections({ projects }: { projects: Project[] }) {
   const rootRef = useRef<HTMLElement>(null);
   const projectWindowRef = useRef<HTMLDivElement>(null);
-  const homeProjects = useMemo(() => getFeaturedProjects(HOME_PROJECT_LIMIT), []);
+  const homeProjects = useMemo(() => projects, [projects]);
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [visibleProjects, setVisibleProjects] = useState(DESKTOP_VISIBLE_PROJECTS);
   const maxProjectIndex = Math.max(0, homeProjects.length - visibleProjects);
@@ -250,43 +249,51 @@ export function PortfolioSections() {
         <h2 className="work-heading" data-feature-copy>WORK</h2>
 
         <div className="project-carousel" data-project-carousel style={carouselStyle}>
-          <div className="project-window" ref={projectWindowRef}>
-            <div className="project-track">
-              {homeProjects.map((project, index) => (
-                <ProjectCard key={project.slug} project={project} index={index} />
-              ))}
+          {homeProjects.length ? (
+            <div className="project-window" ref={projectWindowRef}>
+              <div className="project-track">
+                {homeProjects.map((project, index) => (
+                  <ProjectCard key={project.slug} project={project} index={index} />
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <p className="project-empty">Projects will appear here once they are published.</p>
+          )}
 
-          <div className="project-edge project-edge--left" aria-hidden={isAtFirstProject}>
-            {!isAtFirstProject && (
-              <button
-                className="project-control"
-                type="button"
-                aria-label="Previous projects"
-                onClick={() => setActiveProjectIndex((currentIndex) => Math.max(0, currentIndex - 1))}
-              >
-                ←
-              </button>
-            )}
-          </div>
+          {homeProjects.length ? (
+            <>
+              <div className="project-edge project-edge--left" aria-hidden={isAtFirstProject}>
+                {!isAtFirstProject && (
+                  <button
+                    className="project-control"
+                    type="button"
+                    aria-label="Previous projects"
+                    onClick={() => setActiveProjectIndex((currentIndex) => Math.max(0, currentIndex - 1))}
+                  >
+                    ←
+                  </button>
+                )}
+              </div>
 
-          <div className="project-edge project-edge--right">
-            {isAtLastProject ? (
-              <Link className="project-control project-control--more" href="/projects">
-                See more
-              </Link>
-            ) : (
-              <button
-                className="project-control"
-                type="button"
-                aria-label="Next projects"
-                onClick={() => setActiveProjectIndex((currentIndex) => Math.min(maxProjectIndex, currentIndex + 1))}
-              >
-                →
-              </button>
-            )}
-          </div>
+              <div className="project-edge project-edge--right">
+                {isAtLastProject ? (
+                  <Link className="project-control project-control--more" href="/projects">
+                    See more
+                  </Link>
+                ) : (
+                  <button
+                    className="project-control"
+                    type="button"
+                    aria-label="Next projects"
+                    onClick={() => setActiveProjectIndex((currentIndex) => Math.min(maxProjectIndex, currentIndex + 1))}
+                  >
+                    →
+                  </button>
+                )}
+              </div>
+            </>
+          ) : null}
         </div>
       </section>
       <div id="contact" className="h-px" aria-hidden="true" />

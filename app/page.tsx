@@ -1,6 +1,7 @@
 import { Navigation } from '@/app/components/Navigation';
 import { IntroTrailSection } from '@/app/components/IntroTrailSection';
 import { PortfolioSections } from '@/app/components/PortfolioSections';
+import { getFeaturedProjects } from '@/app/data/projectQueries';
 
 const TRAIL_IMAGES = [
   '/images/trail/trail-01.svg',
@@ -10,12 +11,16 @@ const TRAIL_IMAGES = [
   '/images/trail/trail-05.svg',
 ];
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  const projects = await getFeaturedProjects(4);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#EFEDEA]">
       <Navigation />
       <IntroTrailSection images={TRAIL_IMAGES} />
-      <PortfolioSections />
+      <PortfolioSections projects={projects} />
     </div>
   );
 }
