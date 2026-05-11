@@ -16,6 +16,11 @@ export type ProjectVideo = {
   title?: string;
 };
 
+export type ProjectPdf = {
+  src: string;
+  name?: string;
+};
+
 export type ProjectMediaBlock =
   | ({ type: 'video' } & ProjectVideo)
   | ({ type: 'image' } & ProjectImage)
@@ -24,6 +29,7 @@ export type ProjectMediaBlock =
       title?: string;
       caption?: string;
       layout?: 'grid' | 'masonry' | 'strip' | 'collage' | 'scrapbook';
+      pdf?: ProjectPdf;
       items: ProjectImage[];
     }
   | {

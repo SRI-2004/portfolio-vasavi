@@ -101,6 +101,8 @@ If a project has no media blocks, the project page shows the hero image if one e
 | Gallery title | Optional title for the image group. | Optional | Individual project page above the gallery. | Use when the gallery needs a label. |
 | Gallery caption | One shared caption for the whole gallery. | Optional | Individual project page below a collage gallery. | Use this for collage layouts when multiple images should share one caption. |
 | Layout | Choose `Grid`, `Masonry`, `Strip`, `Collage`, or `Scrapbook`. | Optional | Individual project page gallery layout. | Grid is the safest default. Collage combines images into one composed block. Scrapbook shows uploaded page images as a book viewer. |
+| Scrapbook PDF source | Paste a PDF URL or upload a PDF file. | Optional | Individual project page scrapbook viewer. | Appears only when layout is Scrapbook. If present, PDF pages are used before gallery images. Uploaded PDFs should stay under 20 MB. |
+| Scrapbook PDF name | A short name for the PDF. | Optional | Used for page descriptions and admin clarity. | Helpful when several reports or books are being managed. |
 | Gallery images | Add one or more images. | Yes, at least one image. | Individual project page media column. | Each image has the same source, alt, caption, and aspect options as a single image block. |
 
 ### Collage Gallery Notes
@@ -110,6 +112,8 @@ Use the `Collage` layout when several images should read as one composed visual 
 ### Scrapbook Gallery Notes
 
 Use the `Scrapbook` layout when each gallery image is a finished book or report page. On desktop, the project page shows two pages at once with Previous and Next controls. On mobile, it shows one page at a time. The gallery caption appears below the book viewer.
+
+For higher-quality page rendering, add a Scrapbook PDF. You can paste a PDF URL or upload a PDF file under 20 MB. When a PDF is provided, its pages are used for the scrapbook viewer. Gallery images become the fallback if the PDF cannot load or if no PDF is provided.
 
 ### Text Block
 

@@ -936,24 +936,50 @@ img {
   gap: clamp(0.9rem, 1.7vw, 1.4rem);
   margin: 0;
   outline: none;
+  perspective: 1600px;
 }
 
 .project-scrapbook__spread {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   aspect-ratio: 16 / 9;
-  gap: clamp(0.65rem, 1.2vw, 1rem);
+  gap: clamp(0.35rem, 0.8vw, 0.7rem);
   padding: clamp(0.65rem, 1.2vw, 1rem);
-  background: #E7E5DE;
-  box-shadow: 0 16px 40px rgba(5, 5, 5, 0.14);
+  background: linear-gradient(90deg, #D8D5CB, #F5F3EA 48%, #C6C2B7 50%, #F5F3EA 52%, #D8D5CB);
+  box-shadow: 0 24px 60px rgba(5, 5, 5, 0.2);
+  transform-origin: center;
+  animation: scrapbookTurn 0.42s ease both;
+}
+
+.project-scrapbook__spread::after {
+  position: absolute;
+  inset: clamp(0.65rem, 1.2vw, 1rem) 50%;
+  width: 1px;
+  content: "";
+  background: rgba(5, 5, 5, 0.18);
+  box-shadow: -4px 0 12px rgba(5, 5, 5, 0.12), 4px 0 12px rgba(255, 255, 242, 0.8);
+}
+
+.project-scrapbook__spread[data-turn="previous"] {
+  animation-name: scrapbookTurnBack;
 }
 
 .project-scrapbook__page {
+  position: relative;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
   background: #FFFFF2;
-  box-shadow: 0 0 0 1px rgba(5, 5, 5, 0.12), 0 8px 18px rgba(5, 5, 5, 0.12);
+  box-shadow: 0 0 0 1px rgba(5, 5, 5, 0.12), 0 12px 24px rgba(5, 5, 5, 0.16);
+}
+
+.project-scrapbook__page::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(90deg, rgba(5, 5, 5, 0.08), transparent 10%, transparent 90%, rgba(5, 5, 5, 0.05));
 }
 
 .project-scrapbook__page .project-case__image-button,
@@ -969,6 +995,14 @@ img {
 
 .project-scrapbook__page--blank {
   background: #FFFFF2;
+}
+
+.project-scrapbook__status {
+  color: rgba(5, 5, 5, 0.62);
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .project-scrapbook__controls {
@@ -1001,6 +1035,28 @@ img {
   font-weight: 650;
   line-height: 1.25;
   text-align: center;
+}
+
+@keyframes scrapbookTurn {
+  from {
+    opacity: 0.76;
+    transform: rotateY(-4deg) translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+  }
+}
+
+@keyframes scrapbookTurnBack {
+  from {
+    opacity: 0.76;
+    transform: rotateY(4deg) translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+  }
 }
 
 .project-case__text-block {
@@ -1318,6 +1374,13 @@ img {
   font-weight: 700;
 }
 
+.admin-help {
+  color: rgba(5, 5, 5, 0.62);
+  font-size: 0.82rem;
+  font-weight: 560;
+  line-height: 1.35;
+}
+
 .admin-repeatable {
   display: grid;
   gap: 0.7rem;
@@ -1532,6 +1595,10 @@ img {
     grid-template-columns: 1fr;
     aspect-ratio: auto;
     min-height: 70vh;
+  }
+
+  .project-scrapbook__spread::after {
+    display: none;
   }
 
   .project-case__video {

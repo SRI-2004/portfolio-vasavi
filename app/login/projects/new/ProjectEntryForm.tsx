@@ -22,6 +22,7 @@ type MediaType = ProjectMediaBlock['type'];
 type VideoProvider = 'youtube' | 'vimeo' | 'file';
 type GalleryLayout = 'grid' | 'masonry' | 'strip' | 'collage' | 'scrapbook';
 type ImageSourceMode = 'url' | 'upload';
+type PdfSourceMode = 'url' | 'upload';
 
 type ImageForm = {
   src: string;
@@ -34,6 +35,12 @@ type ImageForm = {
 type LinkForm = {
   label: string;
   href: string;
+};
+
+type PdfForm = {
+  src: string;
+  name: string;
+  sourceMode: PdfSourceMode;
 };
 
 type MediaForm =
@@ -52,6 +59,7 @@ type MediaForm =
       title: string;
       caption: string;
       layout: GalleryLayout;
+      pdf: PdfForm;
       items: ImageForm[];
     }
   | {
@@ -70,6 +78,13 @@ const emptyImage: ImageForm = {
 };
 
 const maxImageUploadBytes = 10 * 1024 * 1024;
+const maxPdfUploadBytes = 20 * 1024 * 1024;
+
+const emptyPdf: PdfForm = {
+  src: '',
+  name: '',
+  sourceMode: 'url',
+};
 
 function slugify(value: string) {
   return value
@@ -131,6 +146,11 @@ function toMediaForm(block: ProjectMediaBlock): MediaForm {
       title: block.title ?? '',
       caption: block.caption ?? '',
       layout: block.layout ?? 'grid',
+      pdf: {
+        src: block.pdf?.src ?? '',
+        name: block.pdf?.name ?? '',
+        sourceMode: block.pdf?.src?.startsWith('data:application/pdf') ? 'upload' : 'url',
+      },
       items: block.items?.length ? block.items.map(toImageForm) : [{ ...emptyImage }],
     };
   }
@@ -170,6 +190,25 @@ function readImageFile(file: File) {
   });
 }
 
+function readPdfFile(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    if (file.type !== 'application/pdf') {
+      reject(new Error('Please upload a PDF file.'));
+      return;
+    }
+
+    if (file.size > maxPdfUploadBytes) {
+      reject(new Error('Please keep uploaded PDFs under 20 MB.'));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Could not read the selected PDF.'));
+    reader.readAsDataURL(file);
+  });
+}
+
 function toMediaPayload(block: MediaForm): ProjectMediaBlock {
   if (block.type === 'video') {
     return {
@@ -194,6 +233,12 @@ function toMediaPayload(block: MediaForm): ProjectMediaBlock {
       title: block.title.trim() || undefined,
       caption: block.caption.trim() || undefined,
       layout: block.layout,
+      pdf: block.pdf.src.trim()
+        ? {
+            src: block.pdf.src.trim(),
+            name: block.pdf.name.trim() || undefined,
+          }
+        : undefined,
       items: block.items.map(toImagePayload),
     };
   }
@@ -216,7 +261,7 @@ function newMediaBlock(type: MediaType): MediaForm {
   }
 
   if (type === 'gallery') {
-    return { type, title: '', caption: '', layout: 'grid', items: [{ ...emptyImage }] };
+    return { type, title: '', caption: '', layout: 'grid', pdf: { ...emptyPdf }, items: [{ ...emptyImage }] };
   }
 
   return { type, eyebrow: '', title: '', body: [''] };
@@ -730,6 +775,28 @@ function MediaBlockEditor({
     }
   }
 
+  async function handlePdfUpload(event: ChangeEvent<HTMLInputElement>) {
+    if (block.type !== 'gallery') return;
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const src = await readPdfFile(file);
+      onChange({
+        ...block,
+        pdf: {
+          src,
+          name: block.pdf.name || file.name,
+          sourceMode: 'upload',
+        },
+      });
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Could not upload that PDF.');
+    } finally {
+      event.target.value = '';
+    }
+  }
+
   return (
     <section className="admin-media-block">
       <header>
@@ -798,6 +865,57 @@ function MediaBlockEditor({
               <option value="scrapbook">Scrapbook</option>
             </select>
           </label>
+          {block.layout === 'scrapbook' ? (
+            <div className="admin-nested">
+              <div className="admin-repeatable__header">
+                <h3>Scrapbook PDF</h3>
+              </div>
+              <p className="admin-help">
+                If a PDF is provided, it will be used as the scrapbook pages. Gallery images are used only when no PDF is provided.
+              </p>
+              <div className="admin-source-toggle" role="group" aria-label="Scrapbook PDF source">
+                <label className="admin-check">
+                  <input
+                    type="radio"
+                    checked={block.pdf.sourceMode === 'url'}
+                    onChange={() => onChange({ ...block, pdf: { ...block.pdf, sourceMode: 'url' } })}
+                  />
+                  URL
+                </label>
+                <label className="admin-check">
+                  <input
+                    type="radio"
+                    checked={block.pdf.sourceMode === 'upload'}
+                    onChange={() => onChange({ ...block, pdf: { ...block.pdf, sourceMode: 'upload' } })}
+                  />
+                  Upload
+                </label>
+              </div>
+              <label>
+                PDF source
+                {block.pdf.sourceMode === 'upload' ? (
+                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} />
+                ) : (
+                  <input
+                    value={block.pdf.src}
+                    onChange={(event) => onChange({ ...block, pdf: { ...block.pdf, src: event.target.value } })}
+                  />
+                )}
+              </label>
+              <label>
+                PDF name
+                <input
+                  value={block.pdf.name}
+                  onChange={(event) => onChange({ ...block, pdf: { ...block.pdf, name: event.target.value } })}
+                />
+              </label>
+              {block.pdf.src ? (
+                <p className="admin-help">
+                  PDF selected{block.pdf.name ? `: ${block.pdf.name}` : ''}. Uploaded PDFs are stored in this project entry.
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <div className="admin-repeatable">
             <div className="admin-repeatable__header">
               <h3>Gallery images</h3>

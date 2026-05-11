@@ -120,7 +120,7 @@ function GalleryBlock({ block }: { block: Extract<ProjectMediaBlock, { type: 'ga
     return (
       <section className="project-case__gallery" data-layout="scrapbook">
         {block.title ? <h2>{block.title}</h2> : null}
-        <ProjectScrapbook pages={block.items} caption={block.caption} />
+        <ProjectScrapbook pages={block.items} caption={block.caption} pdf={block.pdf} />
       </section>
     );
   }
