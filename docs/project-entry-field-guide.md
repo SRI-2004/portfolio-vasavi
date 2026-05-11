@@ -6,7 +6,7 @@ This guide explains what each Create/Edit Project field means, what to enter, an
 
 - Start each new project as `Draft`. Draft projects stay hidden from the public website.
 - Switch to `Published` only when the project is ready to show.
-- Uploaded images should be small, ideally under 1 MB.
+- Uploaded images should be small, ideally under 10 MB.
 - Use clear alt text for every image. Describe what is in the image for someone who cannot see it.
 - If a field is optional and you leave it blank, that part is usually skipped on the public page.
 
@@ -34,7 +34,7 @@ The card image is the main thumbnail image for the project.
 | Form field | What to enter | Required? | Where it appears | Notes |
 |---|---|---:|---|---|
 | Image source: URL | Paste a direct image URL. | Required unless using upload. | Home WORK carousel and `/projects` grid thumbnails. Also used as the fallback image on the project page if no media is added. | Use this when the image already exists online. |
-| Image source: Upload | Choose a small image file from your computer. | Required unless using URL. | Same as URL mode. | The image is stored inside the project entry. Keep it under 1 MB. |
+| Image source: Upload | Choose a small image file from your computer. | Required unless using URL. | Same as URL mode. | The image is stored inside the project entry. Keep it under 10 MB. |
 | Alt text | A short description of the thumbnail image. | Yes | Used by screen readers and when the image cannot load. | Example: `Blue sculptural bottle above water ripples`. |
 | Caption | Optional text describing the image. | Optional | Not shown for the home or `/projects` thumbnail. May show only if this image is used as fallback media. | Usually leave blank for thumbnails. |
 | Aspect | Choose `Wide`, `Square`, or `Portrait`. | Optional | Helps media images display with the intended shape. | The project cards use the site thumbnail style; this is most useful when the image appears in the project media area. |
@@ -81,7 +81,7 @@ If a project has no media blocks, the project page shows the hero image if one e
 | Provider | Choose `YouTube`, `Vimeo`, or `File`. | Yes | Individual project page media column. | Choose the platform that matches the video URL. |
 | Video URL | The YouTube, Vimeo, or direct file video link. | Yes | Individual project page media column. | YouTube and Vimeo videos appear as embedded players. File videos appear as a standard video player. |
 | Poster URL or base64 | Optional preview image for the video. | Optional | Used as the poster image for file videos. Also used as fallback if a file video has no playable URL. | You can paste a URL or upload a poster image. |
-| Upload poster | Choose a small poster image from your computer. | Optional | Same as poster URL. | Keep uploaded poster images under 1 MB. |
+| Upload poster | Choose a small poster image from your computer. | Optional | Same as poster URL. | Keep uploaded poster images under 10 MB. |
 | Title | A short video title. | Optional | Used for the embedded video title and accessibility. | Helpful for screen readers and browser context. |
 
 ### Image Block
@@ -89,7 +89,7 @@ If a project has no media blocks, the project page shows the hero image if one e
 | Form field | What to enter | Required? | Where it appears | Notes |
 |---|---|---:|---|---|
 | Image source: URL | Paste a direct image URL. | Required unless using upload. | Individual project page media column. | Use for one standalone image. |
-| Image source: Upload | Choose a small image file from your computer. | Required unless using URL. | Individual project page media column. | The image is stored inside the project entry. Keep it under 1 MB. |
+| Image source: Upload | Choose a small image file from your computer. | Required unless using URL. | Individual project page media column. | The image is stored inside the project entry. Keep it under 10 MB. |
 | Alt | Description of the image. | Yes | Used by screen readers and when the image cannot load. | Be specific. |
 | Caption | Optional caption under the image. | Optional | Individual project page below that image. | Use only when the image needs extra context. |
 | Aspect | Wide, square, or portrait. | Optional | Individual project page media column. | Helps the image display in the right shape. |
@@ -99,8 +99,17 @@ If a project has no media blocks, the project page shows the hero image if one e
 | Form field | What to enter | Required? | Where it appears | Notes |
 |---|---|---:|---|---|
 | Gallery title | Optional title for the image group. | Optional | Individual project page above the gallery. | Use when the gallery needs a label. |
-| Layout | Choose `Grid`, `Masonry`, or `Strip`. | Optional | Individual project page gallery layout. | Grid is the safest default. |
+| Gallery caption | One shared caption for the whole gallery. | Optional | Individual project page below a collage gallery. | Use this for collage layouts when multiple images should share one caption. |
+| Layout | Choose `Grid`, `Masonry`, `Strip`, `Collage`, or `Scrapbook`. | Optional | Individual project page gallery layout. | Grid is the safest default. Collage combines images into one composed block. Scrapbook shows uploaded page images as a book viewer. |
 | Gallery images | Add one or more images. | Yes, at least one image. | Individual project page media column. | Each image has the same source, alt, caption, and aspect options as a single image block. |
+
+### Collage Gallery Notes
+
+Use the `Collage` layout when several images should read as one composed visual group instead of separate images. A two-image collage makes the first image smaller and the second image larger, so the pair forms a balanced rectangle. Three or more images are arranged into a compact composition. The collage uses one shared Gallery caption below the whole group.
+
+### Scrapbook Gallery Notes
+
+Use the `Scrapbook` layout when each gallery image is a finished book or report page. On desktop, the project page shows two pages at once with Previous and Next controls. On mobile, it shows one page at a time. The gallery caption appears below the book viewer.
 
 ### Text Block
 

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Navigation } from '@/app/components/Navigation';
 import { getProjectBySlug } from '@/app/data/projectQueries';
+import { ProjectMediaImage } from '@/app/projects/[slug]/ProjectMediaImage';
+import { ProjectScrapbook } from '@/app/projects/[slug]/ProjectScrapbook';
 import {
   type Project,
   type ProjectImage,
@@ -83,14 +85,45 @@ function ProjectVideoBlock({ video }: { video: ProjectVideo }) {
 function ImageBlock({ image }: { image: ProjectImage }) {
   return (
     <figure className="project-case__figure" data-aspect={image.aspect || 'wide'}>
-      <img className="project-case__media-img" src={image.src} alt={image.alt} />
-      {image.caption ? <figcaption>{image.caption}</figcaption> : null}
+      <ProjectMediaImage src={image.src} alt={image.alt} caption={image.caption} />
     </figure>
   );
 }
 
 function GalleryBlock({ block }: { block: Extract<ProjectMediaBlock, { type: 'gallery' }> }) {
   if (!block.items.length) return null;
+
+  if (block.layout === 'collage') {
+    return (
+      <section className="project-case__gallery" data-layout="collage">
+        {block.title ? <h2>{block.title}</h2> : null}
+        <figure className="project-case__collage-figure">
+          <div className="project-case__collage-grid" data-count={Math.min(block.items.length, 5)}>
+            {block.items.map((item, index) => (
+              <div className="project-case__collage-cell" key={`${item.src}-${index}`}>
+                <ProjectMediaImage
+                  src={item.src}
+                  alt={item.alt}
+                  caption={block.caption || item.caption}
+                  showCaption={false}
+                />
+              </div>
+            ))}
+          </div>
+          {block.caption ? <figcaption>{block.caption}</figcaption> : null}
+        </figure>
+      </section>
+    );
+  }
+
+  if (block.layout === 'scrapbook') {
+    return (
+      <section className="project-case__gallery" data-layout="scrapbook">
+        {block.title ? <h2>{block.title}</h2> : null}
+        <ProjectScrapbook pages={block.items} caption={block.caption} />
+      </section>
+    );
+  }
 
   return (
     <section className="project-case__gallery" data-layout={block.layout || 'grid'}>
@@ -156,13 +189,13 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const orderedMedia = [...videoBlocks, ...remainingBlocks];
 
   return (
-    <div className="project-case-page min-h-screen bg-[#D8D7D3] text-[#050505]">
+    <div className="project-case-page min-h-screen bg-[#FFFFF2] text-[#050505]">
       <Navigation activeItem="projects" />
 
       <main className="project-case">
         <aside className="project-case__sidebar">
           <div>
-            <h1>{project.title.toLowerCase()}</h1>
+            <h1>{project.title}</h1>
             <p className="project-case__client">
               {[project.detail.client, project.detail.year].filter(Boolean).join(', ')}
             </p>

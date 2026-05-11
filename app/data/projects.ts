@@ -22,7 +22,8 @@ export type ProjectMediaBlock =
   | {
       type: 'gallery';
       title?: string;
-      layout?: 'grid' | 'masonry' | 'strip';
+      caption?: string;
+      layout?: 'grid' | 'masonry' | 'strip' | 'collage' | 'scrapbook';
       items: ProjectImage[];
     }
   | {

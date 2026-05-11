@@ -20,7 +20,7 @@ type FormState =
 type Aspect = NonNullable<ProjectImage['aspect']>;
 type MediaType = ProjectMediaBlock['type'];
 type VideoProvider = 'youtube' | 'vimeo' | 'file';
-type GalleryLayout = 'grid' | 'masonry' | 'strip';
+type GalleryLayout = 'grid' | 'masonry' | 'strip' | 'collage' | 'scrapbook';
 type ImageSourceMode = 'url' | 'upload';
 
 type ImageForm = {
@@ -50,6 +50,7 @@ type MediaForm =
   | {
       type: 'gallery';
       title: string;
+      caption: string;
       layout: GalleryLayout;
       items: ImageForm[];
     }
@@ -68,7 +69,7 @@ const emptyImage: ImageForm = {
   sourceMode: 'url',
 };
 
-const maxImageUploadBytes = 1024 * 1024;
+const maxImageUploadBytes = 10 * 1024 * 1024;
 
 function slugify(value: string) {
   return value
@@ -128,6 +129,7 @@ function toMediaForm(block: ProjectMediaBlock): MediaForm {
     return {
       type: 'gallery',
       title: block.title ?? '',
+      caption: block.caption ?? '',
       layout: block.layout ?? 'grid',
       items: block.items?.length ? block.items.map(toImageForm) : [{ ...emptyImage }],
     };
@@ -157,7 +159,7 @@ function readImageFile(file: File) {
     }
 
     if (file.size > maxImageUploadBytes) {
-      reject(new Error('Please keep uploaded images under 1 MB.'));
+      reject(new Error('Please keep uploaded images under 10 MB.'));
       return;
     }
 
@@ -190,6 +192,7 @@ function toMediaPayload(block: MediaForm): ProjectMediaBlock {
     return {
       type: 'gallery',
       title: block.title.trim() || undefined,
+      caption: block.caption.trim() || undefined,
       layout: block.layout,
       items: block.items.map(toImagePayload),
     };
@@ -213,7 +216,7 @@ function newMediaBlock(type: MediaType): MediaForm {
   }
 
   if (type === 'gallery') {
-    return { type, title: '', layout: 'grid', items: [{ ...emptyImage }] };
+    return { type, title: '', caption: '', layout: 'grid', items: [{ ...emptyImage }] };
   }
 
   return { type, eyebrow: '', title: '', body: [''] };
@@ -782,11 +785,17 @@ function MediaBlockEditor({
             <input value={block.title} onChange={(event) => onChange({ ...block, title: event.target.value })} />
           </label>
           <label>
+            Gallery caption
+            <input value={block.caption} onChange={(event) => onChange({ ...block, caption: event.target.value })} />
+          </label>
+          <label>
             Layout
             <select value={block.layout} onChange={(event) => onChange({ ...block, layout: event.target.value as GalleryLayout })}>
               <option value="grid">Grid</option>
               <option value="masonry">Masonry</option>
               <option value="strip">Strip</option>
+              <option value="collage">Collage</option>
+              <option value="scrapbook">Scrapbook</option>
             </select>
           </label>
           <div className="admin-repeatable">
