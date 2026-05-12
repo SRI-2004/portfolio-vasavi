@@ -1,11 +1,19 @@
 import 'server-only';
 
 import { createSupabaseServerClient } from '@/app/lib/supabase/server';
-import { projectTags, type Project, type ProjectDetail, type ProjectImage, type ProjectTag } from '@/app/data/projects';
+import {
+  projectTags,
+  type Project,
+  type ProjectDetail,
+  type ProjectImage,
+  type ProjectSection,
+  type ProjectTag,
+} from '@/app/data/projects';
 
 type ProjectRow = {
   slug: string;
   title: string;
+  section?: string | null;
   tags: string[] | null;
   disciplines: string[] | null;
   card_image: ProjectImage | null;
@@ -24,6 +32,11 @@ function normalizeStringArray(value: unknown): string[] {
 
 function normalizeTags(value: unknown): ProjectTag[] {
   return normalizeStringArray(value).filter(isProjectTag);
+}
+
+function normalizeSection(value: unknown): ProjectSection {
+  if (value === 'play') return 'play';
+  return value === 'research' ? 'research' : 'projects';
 }
 
 function normalizeImage(value: unknown, fallbackTitle: string): ProjectImage {
@@ -69,6 +82,7 @@ function mapProjectRow(row: ProjectRow, includeDetail = true): Project {
   return {
     slug: row.slug,
     title: row.title,
+    section: normalizeSection(row.section),
     tags: normalizeTags(row.tags),
     disciplines: normalizeStringArray(row.disciplines),
     cardImage: normalizeImage(row.card_image, row.title),
@@ -77,6 +91,7 @@ function mapProjectRow(row: ProjectRow, includeDetail = true): Project {
     detail: includeDetail
       ? normalizeDetail(row.detail, row)
       : {
+          projectType: 'normal',
           headline: row.title,
           summary: [],
           media: [],
@@ -84,14 +99,15 @@ function mapProjectRow(row: ProjectRow, includeDetail = true): Project {
   };
 }
 
-export async function getPublishedProjects() {
+export async function getPublishedProjects(section: ProjectSection = 'projects') {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return [];
 
   const { data, error } = await supabase
     .from('projects')
-    .select('slug,title,tags,disciplines,card_image,featured_on_home,sort_order')
+    .select('slug,title,section,tags,disciplines,card_image,featured_on_home,sort_order')
     .eq('status', 'published')
+    .eq('section', section)
     .order('sort_order', { ascending: true });
 
   if (error || !data) return [];
@@ -108,8 +124,9 @@ export async function getFeaturedProjects(limit = 4) {
 
   const { data, error } = await supabase
     .from('projects')
-    .select('slug,title,disciplines,card_image,featured_on_home,sort_order')
+    .select('slug,title,section,disciplines,card_image,featured_on_home,sort_order')
     .eq('status', 'published')
+    .eq('section', 'projects')
     .eq('featured_on_home', true)
     .order('sort_order', { ascending: true })
     .limit(limit);
@@ -118,17 +135,22 @@ export async function getFeaturedProjects(limit = 4) {
   return (data as ProjectRow[]).map((row) => mapProjectRow(row, false));
 }
 
-export async function getProjectBySlug(slug: string) {
+export async function getProjectBySlug(slug: string, section: ProjectSection = 'projects') {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return undefined;
 
   const { data, error } = await supabase
     .from('projects')
-    .select('slug,title,tags,disciplines,card_image,featured_on_home,sort_order,detail')
+    .select('slug,title,section,tags,disciplines,card_image,featured_on_home,sort_order,detail')
     .eq('slug', slug)
+    .eq('section', section)
     .eq('status', 'published')
     .maybeSingle();
 
   if (error || !data) return undefined;
   return mapProjectRow(data as ProjectRow);
+}
+
+export async function getPlayPage() {
+  return getProjectBySlug('play', 'play');
 }

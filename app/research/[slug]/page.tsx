@@ -3,19 +3,19 @@ import { notFound } from 'next/navigation';
 import { ProjectDetailView } from '@/app/components/ProjectDetailView';
 import { getProjectBySlug } from '@/app/data/projectQueries';
 
-type ProjectPageProps = {
+type ResearchPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ResearchPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug, 'projects');
+  const project = await getProjectBySlug(slug, 'research');
 
   if (!project) {
     return {
-      title: 'Project not found | Vasavi Sridhar',
+      title: 'Research not found | Vasavi Sridhar',
     };
   }
 
@@ -25,11 +25,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   };
 }
 
-export default async function ProjectDetailPage({ params }: ProjectPageProps) {
+export default async function ResearchDetailPage({ params }: ResearchPageProps) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug, 'projects');
+  const project = await getProjectBySlug(slug, 'research');
 
   if (!project) notFound();
 
-  return <ProjectDetailView project={project} activeItem="projects" />;
+  return <ProjectDetailView project={project} activeItem="research" />;
 }

@@ -3,7 +3,13 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '@/app/lib/supabase/browser';
-import { projectTags, type ProjectImage, type ProjectMediaBlock, type ProjectTag } from '@/app/data/projects';
+import {
+  projectTags,
+  type ProjectImage,
+  type ProjectMediaBlock,
+  type ProjectSection,
+  type ProjectTag,
+} from '@/app/data/projects';
 import type { AdminProjectRow, AdminProjectStatus } from '@/app/login/projects/adminTypes';
 
 type Status = AdminProjectStatus;
@@ -315,6 +321,7 @@ export function ProjectEntryForm({
   const [message, setMessage] = useState('');
   const [targetSlug, setTargetSlug] = useState(originalSlug ?? initialProject?.slug ?? '');
   const [projectType, setProjectType] = useState<ProjectType>(initialProjectType);
+  const [section, setSection] = useState<ProjectSection>(initialProject?.section === 'research' ? 'research' : 'projects');
   const [title, setTitle] = useState(initialProject?.title ?? '');
   const [slug, setSlug] = useState(initialProject?.slug ?? '');
   const [slugTouched, setSlugTouched] = useState(Boolean(initialProject?.slug));
@@ -484,6 +491,7 @@ export function ProjectEntryForm({
     const payload = {
       slug: slug.trim(),
       title: title.trim(),
+      section,
       tags,
       disciplines: compactStrings(disciplines),
       card_image: toImagePayload(cardImage),
@@ -566,6 +574,13 @@ export function ProjectEntryForm({
           <select value={projectType} onChange={(event) => setProjectType(event.target.value as ProjectType)}>
             <option value="normal">Normal</option>
             <option value="scrapbook">Scrapbook</option>
+          </select>
+        </label>
+        <label>
+          Project location
+          <select value={section} onChange={(event) => setSection(event.target.value as ProjectSection)}>
+            <option value="projects">Projects</option>
+            <option value="research">Research & Insights</option>
           </select>
         </label>
         <div className="admin-grid admin-grid--compact">

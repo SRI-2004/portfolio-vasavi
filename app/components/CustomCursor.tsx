@@ -14,7 +14,7 @@ export function CustomCursor() {
 
     const updateCursor = () => {
       if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${smoothX.current - 20}px, ${smoothY.current - 20}px, 0)`;
+        cursorRef.current.style.transform = `translate3d(${smoothX.current - 13}px, ${smoothY.current - 13}px, 0)`;
       }
       requestAnimationFrame(updateCursor);
     };
@@ -29,11 +29,12 @@ export function CustomCursor() {
   return (
     <div
       ref={cursorRef}
-      className="pointer-events-none fixed top-0 left-0 z-50 w-10 h-10 rounded-full mix-blend-screen"
+      className="pointer-events-none fixed top-0 left-0 z-50 h-[26px] w-[26px] rounded-full"
       style={{
-        background: 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 70%, transparent 100%)',
-        filter: 'blur(2px)',
-        boxShadow: '0 0 30px rgba(255, 255, 255, 0.3)',
+        border: '1.5px solid rgba(5, 5, 5, 0.72)',
+        background: 'rgba(255, 255, 255, 0.12)',
+        boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.45)',
+        mixBlendMode: 'difference',
       }}
     />
   );

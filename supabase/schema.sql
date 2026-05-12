@@ -7,6 +7,7 @@ create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   title text not null,
+  section text not null default 'projects' check (section in ('projects', 'research', 'play')),
   tags text[] not null default '{}',
   disciplines text[] not null default '{}',
   card_image jsonb not null,
@@ -18,7 +19,19 @@ create table if not exists public.projects (
   updated_at timestamptz not null default now()
 );
 
+alter table public.projects
+add column if not exists section text not null default 'projects'
+check (section in ('projects', 'research', 'play'));
+
+alter table public.projects
+drop constraint if exists projects_section_check;
+
+alter table public.projects
+add constraint projects_section_check
+check (section in ('projects', 'research', 'play'));
+
 create index if not exists projects_status_sort_idx on public.projects(status, sort_order);
+create index if not exists projects_section_status_sort_idx on public.projects(section, status, sort_order);
 create index if not exists projects_slug_idx on public.projects(slug);
 create index if not exists projects_tags_gin_idx on public.projects using gin(tags);
 

@@ -16,6 +16,7 @@ Project rows should use the current frontend JSON shape:
 {
   "slug": "11-bleu",
   "title": "11 BLEU",
+  "section": "projects",
   "tags": ["CMF", "Fashion", "Systems Design"],
   "disciplines": ["Material Development", "Biodesign", "Systems Design"],
   "card_image": {
@@ -43,4 +44,8 @@ Project rows should use the current frontend JSON shape:
 }
 ```
 
+Use `section: "projects"` for the Projects page and home carousel eligibility. Use `section: "research"` for the Research & Insights page.
+
 Do not store new uploaded media as base64 in project JSON. The admin form uploads files to Supabase Storage and saves the resulting public URL in the same `src` fields. Older base64 entries can still render until they are migrated.
+
+The public resume button points to `project-assets/projects/Resume/resume.pdf`. Use the hidden `/login/resume` admin route to overwrite that PDF.

@@ -2,6 +2,8 @@ export const projectTags = ['Biomaterials', 'CMF', 'Social Impact', 'Fashion', '
 
 export type ProjectTag = (typeof projectTags)[number];
 
+export type ProjectSection = 'projects' | 'research' | 'play';
+
 export type ProjectImage = {
   src: string;
   alt: string;
@@ -61,6 +63,7 @@ export type ProjectDetail = {
 export type Project = {
   slug: string;
   title: string;
+  section: ProjectSection;
   tags: ProjectTag[];
   disciplines: string[];
   cardImage: ProjectImage;

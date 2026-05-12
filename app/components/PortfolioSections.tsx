@@ -94,7 +94,7 @@ function ProjectCard({ project, index, className = '' }: { project: Project; ind
         <img className="project-thumb" src={project.cardImage.src} alt={project.cardImage.alt} draggable={false} data-project-image />
       )}
       <p className="project-meta" data-project-text>{getProjectMeta(project)}</p>
-      <h3 className="project-name" data-project-text>{project.title}</h3>
+      <h3 className="project-name" data-project-text>{project.title.toUpperCase()}</h3>
     </Link>
   );
 }
@@ -180,18 +180,6 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
         },
       });
 
-      gsap.from('[data-feature-copy]', {
-        autoAlpha: 0,
-        y: 22,
-        stagger: 0.08,
-        duration: 1,
-        ease: portfolioMotion.ease,
-        scrollTrigger: {
-          trigger: '[data-feature-section]',
-          start: 'top 72%',
-        },
-      });
-
       gsap.from('[data-project-image]', {
         autoAlpha: 0,
         scale: 0.96,
@@ -223,6 +211,8 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
 
   return (
     <main ref={rootRef} className="portfolio-motion relative z-10 bg-transparent text-[#191919]">
+      <div className="about-awards-transition" aria-hidden="true" />
+
       <section id="research" className="content-band awards-section" data-education-section>
         <div className="awards-inner">
           <div className="awards-layout">
@@ -267,7 +257,9 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
       </section>
 
       <section id="projects" className="content-band work-section" data-feature-section>
-        <h2 className="work-heading" data-feature-copy>WORK</h2>
+        <Link href="/projects" className="work-heading">
+          Projects
+        </Link>
 
         <div className="project-carousel" data-project-carousel style={carouselStyle}>
           {homeProjects.length ? (

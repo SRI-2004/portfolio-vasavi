@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${instrumentSans.className} scroll-smooth`}>
-      <body className="bg-[#EFEDEA] text-[#191919] antialiased">
+      <body className="bg-white text-[#191919] antialiased">
         <PointerProvider>
           <LenisScroll>{children}</LenisScroll>
         </PointerProvider>

@@ -77,6 +77,12 @@ export function LoginForm() {
         <Link className="login-panel__link" href="/login/projects/new">
           Create project
         </Link>
+        <Link className="login-panel__link" href="/login/resume">
+          Upload resume
+        </Link>
+        <Link className="login-panel__link" href="/login/play">
+          Edit play page
+        </Link>
         <button type="button" onClick={handleSignOut}>
           Sign out
         </button>

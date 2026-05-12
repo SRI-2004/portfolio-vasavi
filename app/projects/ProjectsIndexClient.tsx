@@ -19,7 +19,7 @@ function isProjectTag(filter: FilterValue): filter is ProjectTag {
   return filter !== allFilter;
 }
 
-export function ProjectsIndexClient({ projects }: { projects: Project[] }) {
+export function ProjectsIndexClient({ projects, basePath = '/projects' }: { projects: Project[]; basePath?: string }) {
   const [activeFilter, setActiveFilter] = useState<FilterValue>(allFilter);
 
   const tagCounts = useMemo(() => {
@@ -56,7 +56,7 @@ export function ProjectsIndexClient({ projects }: { projects: Project[] }) {
       {visibleProjects.length ? (
         <div className="projects-grid-page">
           {visibleProjects.map((project) => (
-            <Link href={`/projects/${project.slug}`} className="project-card project-card--grid" key={project.slug}>
+            <Link href={`${basePath}/${project.slug}`} className="project-card project-card--grid" key={project.slug}>
               {canUseNextImage(project.cardImage.src) ? (
                 <Image
                   className="project-thumb"
@@ -76,7 +76,7 @@ export function ProjectsIndexClient({ projects }: { projects: Project[] }) {
                 />
               )}
               <p className="project-meta">{getProjectMeta(project)}</p>
-              <h2 className="project-name">{project.title}</h2>
+              <h2 className="project-name">{project.title.toUpperCase()}</h2>
             </Link>
           ))}
         </div>

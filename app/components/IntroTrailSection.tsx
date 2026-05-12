@@ -6,6 +6,7 @@ import { useImageSpawner, type TrailImageState } from '@/app/hooks/useImageSpawn
 import { usePointer } from '@/app/context/PointerContext';
 import { isTouchDevice, prefersReducedMotion, preloadImages } from '@/app/utils/helpers';
 import { introConfig } from '@/app/config/introConfig';
+import { resumeUrl } from '@/app/config/siteAssets';
 
 interface IntroTrailSectionProps {
   images: string[];
@@ -88,7 +89,7 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
   });
 
   return (
-    <section id="top" ref={sectionRef} className="relative bg-[#EFEDEA]" style={introVars}>
+    <section id="top" ref={sectionRef} className="relative bg-white" style={introVars}>
       <div
         ref={frameRef}
         className="intro-frame"
@@ -163,7 +164,7 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
               <p className="about-support" data-about-line>
                 {ABOUT_LINES[1]}
               </p>
-              <a className="resume-button pointer-events-auto" href="/resume.pdf" download data-about-action>
+              <a className="resume-button pointer-events-auto" href={resumeUrl} download data-about-action>
                 RESUME
               </a>
             </div>

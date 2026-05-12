@@ -1,13 +1,13 @@
 type NavigationProps = {
-  activeItem?: 'projects';
+  activeItem?: 'projects' | 'research' | 'play';
 };
 
 const navItems = [
-  { key: 'projects', label: 'Projects', href: '#projects', pageHref: '/projects' },
-  { key: 'research', label: 'Research & Insights', href: '#research', pageHref: '/#research' },
+  { key: 'projects', label: 'Projects', href: '/projects', pageHref: '/projects' },
+  { key: 'research', label: 'Research & Insights', href: '/research', pageHref: '/research' },
   { key: 'about', label: 'About', href: '#about', pageHref: '/#about' },
-  { key: 'play', label: 'Play', href: '#play', pageHref: '/#play' },
-  { key: 'contact', label: 'Contact', href: '#contact', pageHref: '/#contact' },
+  { key: 'play', label: 'Play', href: '/play', pageHref: '/play' },
+  { key: 'contact', label: 'Contact', href: 'mailto:vasavi9c@gmail.com', pageHref: 'mailto:vasavi9c@gmail.com' },
 ];
 
 export function Navigation({ activeItem }: NavigationProps) {

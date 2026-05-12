@@ -18,6 +18,7 @@ This guide explains what each Create/Edit Project field means, what to enter, an
 | Title | The project name, such as `11 BLEU` or `Pseudocorium`. | Yes | Home WORK carousel, `/projects` grid, individual project page heading, browser page title. | This is the main visible project name. |
 | Slug | A short URL name using lowercase letters, numbers, and hyphens, such as `11-bleu`. | Yes | The project page URL: `/projects/your-slug`. | This should be unique. Changing it changes the public project link. |
 | Project type | Choose `Normal` or `Scrapbook`. | Yes | Individual project page media area. | Normal projects use media blocks. Scrapbook projects use a two-page book viewer. |
+| Project location | Choose `Projects` or `Research & Insights`. | Yes | Controls whether the entry appears on `/projects` or `/research`. | Projects is the default. Research entries use the same layout but appear on the Research & Insights page. |
 | Status | Choose `Draft` or `Published`. | Yes | Controls whether the project appears publicly. | Draft projects appear only in the admin dashboard. Published projects can appear on the website. |
 | Sort order | A number used to order projects. Lower numbers appear earlier. | Yes | Home WORK carousel and `/projects` grid order. | Use spacing like `10`, `20`, `30` so projects can be inserted later. |
 | Featured on home | Turn on if the project should appear in the home page WORK carousel. | Optional | Home WORK carousel. | The project must also be `Published` to appear publicly. |
@@ -137,9 +138,10 @@ On desktop, the project page shows two pages at once with Previous and Next cont
 
 | Website area | Uses these fields |
 |---|---|
-| Home page WORK carousel | Title, disciplines, card image, featured on home, sort order, published status. |
-| `/projects` page | Title, slug, tags, disciplines, card image, sort order, published status. |
-| `/projects` filters | Tags and published status. |
+| Home page Projects carousel | Title, disciplines, card image, featured on home, sort order, published status, and Project location set to Projects. |
+| `/projects` page | Project entries only: title, slug, tags, disciplines, card image, sort order, published status. |
+| `/research` page | Research & Insights entries only: title, slug, tags, disciplines, card image, sort order, published status. |
+| `/projects` and `/research` filters | Tags and published status. |
 | Individual project page sidebar | Title, client, year, categories or disciplines, headline, summary paragraphs, buzz, links, credits. |
 | Individual project page media column | Normal media blocks or Scrapbook book viewer. If a normal project has no media blocks, hero image is used. If no hero image exists, card image is used. |
 | Browser page title | Project title. |
@@ -154,7 +156,7 @@ Use `Draft` status while entering content. The project stays visible in the admi
 
 ### Featured Homepage Project
 
-To show a project on the home WORK carousel, set the project to `Published`, turn on `Featured on home`, add a strong card image, and give it a low sort order number.
+To show a project on the home Projects carousel, set Project location to `Projects`, set the project to `Published`, turn on `Featured on home`, add a strong card image, and give it a low sort order number.
 
 ### Project With Video And Gallery
 
@@ -172,12 +174,21 @@ If no media blocks are added, the individual project page still shows an image. 
 
 1. Create the project as a draft.
 2. Add the required basics: title, slug, status, sort order.
-3. Add classification: at least one discipline, and tags if the project should be filterable.
-4. Add the card image and alt text.
-5. Fill in the detail intro: headline and summary paragraphs.
-6. Add optional sidebar extras: buzz, credits, and links.
-7. For Normal projects, add media blocks in the order they should appear.
-8. For Scrapbook projects, add a PDF or fallback page images.
-9. Change status to published when ready.
-10. Check the home page, `/projects`, and the individual project page.
-11. Return to the dashboard to edit, unpublish, or delete the project later.
+3. Choose where it belongs: Projects or Research & Insights.
+4. Add classification: at least one discipline, and tags if the project should be filterable.
+5. Add the card image and alt text.
+6. Fill in the detail intro: headline and summary paragraphs.
+7. Add optional sidebar extras: buzz, credits, and links.
+8. For Normal projects, add media blocks in the order they should appear.
+9. For Scrapbook projects, add a PDF or fallback page images.
+10. Change status to published when ready.
+11. Check the home page, `/projects` or `/research`, and the individual project page.
+12. Return to the dashboard to edit, unpublish, or delete the project later.
+
+## Resume Upload
+
+The public Resume button uses the file at:
+
+`https://hvvaqxmofozcssyquvre.supabase.co/storage/v1/object/public/project-assets/projects/Resume/resume.pdf`
+
+After logging in, use `Upload resume` to replace that PDF. Uploads must be PDF files under 20 MB and overwrite the same Storage path, so the public Resume button does not need to change.

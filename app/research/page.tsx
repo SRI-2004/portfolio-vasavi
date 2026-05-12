@@ -5,15 +5,15 @@ import { ProjectsIndexClient } from '@/app/projects/ProjectsIndexClient';
 
 export const revalidate = 60;
 
-export default async function ProjectsPage() {
-  const projects = await getPublishedProjects();
+export default async function ResearchPage() {
+  const projects = await getPublishedProjects('research');
 
   return (
     <div className="projects-page public-page-shell bg-white text-[#191919]">
-      <Navigation activeItem="projects" />
+      <Navigation activeItem="research" />
 
-      <main id="projects" className="projects-page__main public-page-main">
-        <ProjectsIndexClient projects={projects} basePath="/projects" />
+      <main id="research" className="projects-page__main public-page-main">
+        <ProjectsIndexClient projects={projects} basePath="/research" />
       </main>
 
       <PublicFooter />

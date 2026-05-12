@@ -1,6 +1,7 @@
 import { Navigation } from '@/app/components/Navigation';
 import { IntroTrailSection } from '@/app/components/IntroTrailSection';
 import { PortfolioSections } from '@/app/components/PortfolioSections';
+import { PublicFooter } from '@/app/components/PublicFooter';
 import { getFeaturedProjects } from '@/app/data/projectQueries';
 
 const TRAIL_IMAGES = [
@@ -17,10 +18,11 @@ export default async function Home() {
   const projects = await getFeaturedProjects(4);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#EFEDEA]">
+    <div className="public-page-shell relative overflow-x-hidden bg-white">
       <Navigation />
       <IntroTrailSection images={TRAIL_IMAGES} />
       <PortfolioSections projects={projects} />
+      <PublicFooter />
     </div>
   );
 }

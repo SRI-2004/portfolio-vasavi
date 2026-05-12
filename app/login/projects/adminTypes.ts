@@ -1,10 +1,11 @@
-import type { ProjectDetail, ProjectImage, ProjectTag } from '@/app/data/projects';
+import type { ProjectDetail, ProjectImage, ProjectSection, ProjectTag } from '@/app/data/projects';
 
 export type AdminProjectStatus = 'draft' | 'published';
 
 export type AdminProjectRow = {
   slug: string;
   title: string;
+  section: ProjectSection | string | null;
   tags: ProjectTag[] | string[] | null;
   disciplines: string[] | null;
   card_image: ProjectImage | null;
@@ -16,4 +17,4 @@ export type AdminProjectRow = {
 };
 
 export const adminProjectSelect =
-  'slug,title,status,featured_on_home,sort_order,updated_at,tags,disciplines,card_image,detail';
+  'slug,title,section,status,featured_on_home,sort_order,updated_at,tags,disciplines,card_image,detail';

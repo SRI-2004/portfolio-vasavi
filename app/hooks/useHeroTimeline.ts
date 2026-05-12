@@ -107,12 +107,12 @@ export function useHeroTimeline({
 
         if (frame) {
           gsap.set(frame, {
-            backgroundColor: gsap.utils.interpolate('#EFEDEA', '#191919', blackReveal),
+            backgroundColor: gsap.utils.interpolate('#FFFFFF', '#191919', blackReveal),
           });
         }
 
         gsap.set(section, {
-          backgroundColor: gsap.utils.interpolate('#EFEDEA', '#191919', blackReveal),
+          backgroundColor: gsap.utils.interpolate('#FFFFFF', '#191919', blackReveal),
         });
 
         gsap.set(hero, {
@@ -121,7 +121,7 @@ export function useHeroTimeline({
           rotateY: depth * 2,
           borderColor: `rgba(25, 25, 25, ${0.12 * (1 - chromeFade)})`,
           borderRadius: `${22 - chromeFade * 10}px`,
-          backgroundColor: `rgba(239, 237, 234, ${0.4 * (1 - chromeFade)})`,
+          backgroundColor: `rgba(255, 255, 255, ${0.4 * (1 - chromeFade)})`,
           boxShadow: `0 ${26 * (1 - chromeFade)}px ${80 * (1 - chromeFade)}px rgba(25,25,25,${0.08 * (1 - chromeFade)})`,
           transformPerspective: 1400,
         });

@@ -148,6 +148,7 @@ export function ProjectDashboard() {
               <tr>
                 <th>Title</th>
                 <th>Slug</th>
+                <th>Location</th>
                 <th>Status</th>
                 <th>Featured</th>
                 <th>Sort</th>
@@ -160,6 +161,7 @@ export function ProjectDashboard() {
                 <tr key={project.slug}>
                   <td>{project.title}</td>
                   <td>{project.slug}</td>
+                  <td>{project.section === 'play' ? 'Play' : project.section === 'research' ? 'Research' : 'Projects'}</td>
                   <td>
                     <span className="admin-status-badge" data-status={project.status}>
                       {project.status}
@@ -173,7 +175,9 @@ export function ProjectDashboard() {
                       <button type="button" onClick={() => updateStatus(project)}>
                         {project.status === 'published' ? 'Draft' : 'Publish'}
                       </button>
-                      <Link href={`/login/projects/${encodeURIComponent(project.slug)}/edit`}>Edit</Link>
+                      <Link href={project.section === 'play' ? '/login/play' : `/login/projects/${encodeURIComponent(project.slug)}/edit`}>
+                        Edit
+                      </Link>
                       <button type="button" onClick={() => deleteProject(project)}>
                         Delete
                       </button>
