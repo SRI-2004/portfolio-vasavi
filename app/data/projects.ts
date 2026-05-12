@@ -45,6 +45,7 @@ export type ProjectLink = {
 };
 
 export type ProjectDetail = {
+  projectType?: 'normal' | 'scrapbook';
   headline: string;
   summary: string[];
   media: ProjectMediaBlock[];

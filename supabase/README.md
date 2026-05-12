@@ -8,7 +8,7 @@
 4. Run `supabase/schema.sql` in the Supabase SQL editor.
 5. Create your admin user in Authentication.
 6. Insert that user's id into `public.admin_users`.
-7. Create a public Storage bucket named `project-assets` for project images and videos.
+7. Create or confirm the public Storage bucket named `project-assets` exists for project images, PDFs, and videos. The SQL file also attempts to create the bucket and storage policies.
 
 Project rows should use the current frontend JSON shape:
 
@@ -19,7 +19,7 @@ Project rows should use the current frontend JSON shape:
   "tags": ["CMF", "Fashion", "Systems Design"],
   "disciplines": ["Material Development", "Biodesign", "Systems Design"],
   "card_image": {
-    "src": "https://...",
+    "src": "https://YOUR-PROJECT.supabase.co/storage/v1/object/public/project-assets/projects/...",
     "alt": "Project thumbnail"
   },
   "featured_on_home": true,
@@ -42,3 +42,5 @@ Project rows should use the current frontend JSON shape:
   }
 }
 ```
+
+Do not store new uploaded media as base64 in project JSON. The admin form uploads files to Supabase Storage and saves the resulting public URL in the same `src` fields. Older base64 entries can still render until they are migrated.

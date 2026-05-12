@@ -1,6 +1,7 @@
 'use client';
 
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -68,10 +69,30 @@ const portfolioMotion = {
 const DESKTOP_VISIBLE_PROJECTS = 2;
 const MOBILE_VISIBLE_PROJECTS = 1;
 
+function canUseNextImage(src: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return src.startsWith('/') || Boolean(supabaseUrl && src.startsWith(supabaseUrl));
+}
+
 function ProjectCard({ project, index, className = '' }: { project: Project; index?: number; className?: string }) {
+  const useNextImage = canUseNextImage(project.cardImage.src);
+
   return (
     <Link href={`/projects/${project.slug}`} className={`project-card ${className}`} data-project-card-index={index}>
-      <img className="project-thumb" src={project.cardImage.src} alt="" draggable={false} data-project-image />
+      {useNextImage ? (
+        <Image
+          className="project-thumb"
+          src={project.cardImage.src}
+          alt={project.cardImage.alt}
+          width={1200}
+          height={828}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          draggable={false}
+          data-project-image
+        />
+      ) : (
+        <img className="project-thumb" src={project.cardImage.src} alt={project.cardImage.alt} draggable={false} data-project-image />
+      )}
       <p className="project-meta" data-project-text>{getProjectMeta(project)}</p>
       <h3 className="project-name" data-project-text>{project.title}</h3>
     </Link>

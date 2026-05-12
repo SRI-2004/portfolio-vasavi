@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { getProjectMeta, projectTags, type Project, type ProjectTag } from '@/app/data/projects';
 
@@ -8,6 +9,11 @@ type FilterValue = 'All' | ProjectTag;
 
 const allFilter: FilterValue = 'All';
 const filters: FilterValue[] = [allFilter, ...projectTags];
+
+function canUseNextImage(src: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return src.startsWith('/') || Boolean(supabaseUrl && src.startsWith(supabaseUrl));
+}
 
 function isProjectTag(filter: FilterValue): filter is ProjectTag {
   return filter !== allFilter;
@@ -51,12 +57,24 @@ export function ProjectsIndexClient({ projects }: { projects: Project[] }) {
         <div className="projects-grid-page">
           {visibleProjects.map((project) => (
             <Link href={`/projects/${project.slug}`} className="project-card project-card--grid" key={project.slug}>
-              <img
-                className="project-thumb"
-                src={project.cardImage.src}
-                alt={project.cardImage.alt}
-                draggable={false}
-              />
+              {canUseNextImage(project.cardImage.src) ? (
+                <Image
+                  className="project-thumb"
+                  src={project.cardImage.src}
+                  alt={project.cardImage.alt}
+                  width={1200}
+                  height={828}
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  draggable={false}
+                />
+              ) : (
+                <img
+                  className="project-thumb"
+                  src={project.cardImage.src}
+                  alt={project.cardImage.alt}
+                  draggable={false}
+                />
+              )}
               <p className="project-meta">{getProjectMeta(project)}</p>
               <h2 className="project-name">{project.title}</h2>
             </Link>

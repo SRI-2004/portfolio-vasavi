@@ -19,10 +19,13 @@ type FormState =
   | 'missing-config';
 type Aspect = NonNullable<ProjectImage['aspect']>;
 type MediaType = ProjectMediaBlock['type'];
+type ProjectType = 'normal' | 'scrapbook';
 type VideoProvider = 'youtube' | 'vimeo' | 'file';
-type GalleryLayout = 'grid' | 'masonry' | 'strip' | 'collage' | 'scrapbook';
+type GalleryLayout = 'grid' | 'masonry' | 'strip' | 'collage';
 type ImageSourceMode = 'url' | 'upload';
 type PdfSourceMode = 'url' | 'upload';
+type AssetUploadKind = 'card' | 'hero' | 'media' | 'gallery' | 'poster' | 'pdf' | 'video';
+type UploadAsset = (file: File, kind: AssetUploadKind) => Promise<string>;
 
 type ImageForm = {
   src: string;
@@ -59,7 +62,6 @@ type MediaForm =
       title: string;
       caption: string;
       layout: GalleryLayout;
-      pdf: PdfForm;
       items: ImageForm[];
     }
   | {
@@ -79,11 +81,27 @@ const emptyImage: ImageForm = {
 
 const maxImageUploadBytes = 10 * 1024 * 1024;
 const maxPdfUploadBytes = 20 * 1024 * 1024;
+const maxVideoUploadBytes = 50 * 1024 * 1024;
+const assetBucket = 'project-assets';
 
 const emptyPdf: PdfForm = {
   src: '',
   name: '',
   sourceMode: 'url',
+};
+
+type ScrapbookForm = {
+  title: string;
+  caption: string;
+  pdf: PdfForm;
+  items: ImageForm[];
+};
+
+const emptyScrapbook: ScrapbookForm = {
+  title: '',
+  caption: '',
+  pdf: { ...emptyPdf },
+  items: [{ ...emptyImage }],
 };
 
 function slugify(value: string) {
@@ -109,7 +127,7 @@ function toImageForm(image?: ProjectImage | null): ImageForm {
     alt: image?.alt ?? '',
     caption: image?.caption ?? '',
     aspect: image?.aspect ?? 'wide',
-    sourceMode: image?.src?.startsWith('data:image/') ? 'upload' : 'url',
+    sourceMode: 'url',
   };
 }
 
@@ -145,12 +163,7 @@ function toMediaForm(block: ProjectMediaBlock): MediaForm {
       type: 'gallery',
       title: block.title ?? '',
       caption: block.caption ?? '',
-      layout: block.layout ?? 'grid',
-      pdf: {
-        src: block.pdf?.src ?? '',
-        name: block.pdf?.name ?? '',
-        sourceMode: block.pdf?.src?.startsWith('data:application/pdf') ? 'upload' : 'url',
-      },
+      layout: block.layout === 'masonry' || block.layout === 'strip' || block.layout === 'collage' ? block.layout : 'grid',
       items: block.items?.length ? block.items.map(toImageForm) : [{ ...emptyImage }],
     };
   }
@@ -163,6 +176,25 @@ function toMediaForm(block: ProjectMediaBlock): MediaForm {
   };
 }
 
+function isScrapbookBlock(block: ProjectMediaBlock): block is Extract<ProjectMediaBlock, { type: 'gallery' }> {
+  return block.type === 'gallery' && block.layout === 'scrapbook';
+}
+
+function toScrapbookForm(block?: Extract<ProjectMediaBlock, { type: 'gallery' }> | null): ScrapbookForm {
+  if (!block) return { ...emptyScrapbook, pdf: { ...emptyPdf }, items: [{ ...emptyImage }] };
+
+  return {
+    title: block.title ?? '',
+    caption: block.caption ?? '',
+    pdf: {
+      src: block.pdf?.src ?? '',
+      name: block.pdf?.name ?? '',
+      sourceMode: 'url',
+    },
+    items: block.items?.length ? block.items.map(toImageForm) : [{ ...emptyImage }],
+  };
+}
+
 function isProjectTag(value: string): value is ProjectTag {
   return (projectTags as readonly string[]).includes(value);
 }
@@ -171,42 +203,29 @@ function normalizeTags(values?: string[] | null): ProjectTag[] {
   return (values ?? []).filter(isProjectTag);
 }
 
-function readImageFile(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
-      reject(new Error('Please upload an image file.'));
-      return;
-    }
-
-    if (file.size > maxImageUploadBytes) {
-      reject(new Error('Please keep uploaded images under 10 MB.'));
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error('Could not read the selected image.'));
-    reader.readAsDataURL(file);
-  });
+function validateImageFile(file: File) {
+  if (!file.type.startsWith('image/')) throw new Error('Please upload an image file.');
+  if (file.size > maxImageUploadBytes) throw new Error('Please keep uploaded images under 10 MB.');
 }
 
-function readPdfFile(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    if (file.type !== 'application/pdf') {
-      reject(new Error('Please upload a PDF file.'));
-      return;
-    }
+function validatePdfFile(file: File) {
+  if (file.type !== 'application/pdf') throw new Error('Please upload a PDF file.');
+  if (file.size > maxPdfUploadBytes) throw new Error('Please keep uploaded PDFs under 20 MB.');
+}
 
-    if (file.size > maxPdfUploadBytes) {
-      reject(new Error('Please keep uploaded PDFs under 20 MB.'));
-      return;
-    }
+function validateVideoFile(file: File) {
+  if (!file.type.startsWith('video/')) throw new Error('Please upload a video file.');
+  if (file.size > maxVideoUploadBytes) throw new Error('Please keep uploaded videos under 50 MB.');
+}
 
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error('Could not read the selected PDF.'));
-    reader.readAsDataURL(file);
-  });
+function sanitizeFileName(value: string) {
+  const cleanName = value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9._-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return cleanName || 'asset';
 }
 
 function toMediaPayload(block: MediaForm): ProjectMediaBlock {
@@ -233,13 +252,7 @@ function toMediaPayload(block: MediaForm): ProjectMediaBlock {
       title: block.title.trim() || undefined,
       caption: block.caption.trim() || undefined,
       layout: block.layout,
-      pdf: block.pdf.src.trim()
-        ? {
-            src: block.pdf.src.trim(),
-            name: block.pdf.name.trim() || undefined,
-          }
-        : undefined,
-      items: block.items.map(toImagePayload),
+      items: block.items.filter((item) => item.src.trim()).map(toImagePayload),
     };
   }
 
@@ -248,6 +261,22 @@ function toMediaPayload(block: MediaForm): ProjectMediaBlock {
     eyebrow: block.eyebrow.trim() || undefined,
     title: block.title.trim() || undefined,
     body: compactStrings(block.body),
+  };
+}
+
+function toScrapbookPayload(scrapbook: ScrapbookForm): ProjectMediaBlock {
+  return {
+    type: 'gallery',
+    title: scrapbook.title.trim() || undefined,
+    caption: scrapbook.caption.trim() || undefined,
+    layout: 'scrapbook',
+    pdf: scrapbook.pdf.src.trim()
+      ? {
+          src: scrapbook.pdf.src.trim(),
+          name: scrapbook.pdf.name.trim() || undefined,
+        }
+      : undefined,
+    items: scrapbook.items.filter((item) => item.src.trim()).map(toImagePayload),
   };
 }
 
@@ -261,7 +290,7 @@ function newMediaBlock(type: MediaType): MediaForm {
   }
 
   if (type === 'gallery') {
-    return { type, title: '', caption: '', layout: 'grid', pdf: { ...emptyPdf }, items: [{ ...emptyImage }] };
+    return { type, title: '', caption: '', layout: 'grid', items: [{ ...emptyImage }] };
   }
 
   return { type, eyebrow: '', title: '', body: [''] };
@@ -278,9 +307,14 @@ export function ProjectEntryForm({
 }) {
   const supabase = createSupabaseBrowserClient();
   const initialDetail = initialProject?.detail;
+  const initialMedia = initialDetail?.media ?? [];
+  const initialScrapbookBlock = initialMedia.find(isScrapbookBlock);
+  const initialProjectType: ProjectType =
+    initialDetail?.projectType === 'scrapbook' || initialScrapbookBlock ? 'scrapbook' : 'normal';
   const [state, setState] = useState<FormState>('checking');
   const [message, setMessage] = useState('');
   const [targetSlug, setTargetSlug] = useState(originalSlug ?? initialProject?.slug ?? '');
+  const [projectType, setProjectType] = useState<ProjectType>(initialProjectType);
   const [title, setTitle] = useState(initialProject?.title ?? '');
   const [slug, setSlug] = useState(initialProject?.slug ?? '');
   const [slugTouched, setSlugTouched] = useState(Boolean(initialProject?.slug));
@@ -303,8 +337,9 @@ export function ProjectEntryForm({
     initialDetail?.links?.length ? initialDetail.links.map((link) => ({ label: link.label, href: link.href })) : [{ label: '', href: '' }],
   );
   const [mediaBlocks, setMediaBlocks] = useState<MediaForm[]>(
-    initialDetail?.media?.length ? initialDetail.media.map(toMediaForm) : [],
+    initialMedia.filter((block) => !isScrapbookBlock(block)).map(toMediaForm),
   );
+  const [scrapbook, setScrapbook] = useState<ScrapbookForm>(toScrapbookForm(initialScrapbookBlock));
 
   useEffect(() => {
     if (!supabase) {
@@ -334,6 +369,28 @@ export function ProjectEntryForm({
 
   const canSubmit = useMemo(() => state === 'ready' || state === 'error' || state === 'success', [state]);
 
+  async function uploadAsset(file: File, kind: AssetUploadKind) {
+    if (!supabase) throw new Error('Supabase is not configured.');
+
+    if (kind === 'pdf') validatePdfFile(file);
+    else if (kind === 'video') validateVideoFile(file);
+    else validateImageFile(file);
+
+    const projectSlug = slug.trim() || slugify(title) || 'untitled-project';
+    const path = `projects/${projectSlug}/${kind}/${crypto.randomUUID()}-${sanitizeFileName(file.name)}`;
+    const { error } = await supabase.storage.from(assetBucket).upload(path, file, {
+      contentType: file.type,
+      upsert: false,
+    });
+
+    if (error) {
+      throw new Error(`${error.message}. Confirm the public "${assetBucket}" Supabase Storage bucket exists and upload policies allow admin users.`);
+    }
+
+    const { data } = supabase.storage.from(assetBucket).getPublicUrl(path);
+    return data.publicUrl;
+  }
+
   function validate() {
     const errors: string[] = [];
     const cleanSlug = slug.trim();
@@ -352,6 +409,21 @@ export function ProjectEntryForm({
     if (!cleanSummary.length) errors.push('At least one summary paragraph is required.');
     if (useHeroImage && heroImage.src.trim() && !heroImage.alt.trim()) errors.push('Hero image alt text is required.');
 
+    if (projectType === 'scrapbook') {
+      const hasPdf = Boolean(scrapbook.pdf.src.trim());
+      const scrapbookPages = scrapbook.items.filter((item) => item.src.trim());
+
+      if (!hasPdf && !scrapbookPages.length) {
+        errors.push('Scrapbook projects need a PDF source or at least one page image.');
+      }
+
+      scrapbookPages.forEach((item, itemIndex) => {
+        if (!item.alt.trim()) errors.push(`Scrapbook page ${itemIndex + 1}: alt text is required.`);
+      });
+
+      return errors;
+    }
+
     mediaBlocks.forEach((block, index) => {
       const label = `Media block ${index + 1}`;
       if (block.type === 'video' && !block.url.trim()) errors.push(`${label}: video URL is required.`);
@@ -360,8 +432,9 @@ export function ProjectEntryForm({
         if (!block.alt.trim()) errors.push(`${label}: image alt text is required.`);
       }
       if (block.type === 'gallery') {
-        if (!block.items.length) errors.push(`${label}: gallery needs at least one image.`);
-        block.items.forEach((item, itemIndex) => {
+        const galleryItems = block.items.filter((item) => item.src.trim());
+        if (!galleryItems.length) errors.push(`${label}: gallery needs at least one image.`);
+        galleryItems.forEach((item, itemIndex) => {
           if (!item.src.trim()) errors.push(`${label}, image ${itemIndex + 1}: image source is required.`);
           if (!item.alt.trim()) errors.push(`${label}, image ${itemIndex + 1}: alt text is required.`);
         });
@@ -393,9 +466,10 @@ export function ProjectEntryForm({
     setMessage('');
 
     const detail = {
+      projectType,
       headline: headline.trim(),
       summary: compactStrings(summary),
-      media: mediaBlocks.map(toMediaPayload),
+      media: projectType === 'scrapbook' ? [toScrapbookPayload(scrapbook)] : mediaBlocks.map(toMediaPayload),
       client: client.trim() || undefined,
       year: year.trim() || undefined,
       categories: compactStrings(categories),
@@ -487,6 +561,13 @@ export function ProjectEntryForm({
             required
           />
         </label>
+        <label>
+          Project type
+          <select value={projectType} onChange={(event) => setProjectType(event.target.value as ProjectType)}>
+            <option value="normal">Normal</option>
+            <option value="scrapbook">Scrapbook</option>
+          </select>
+        </label>
         <div className="admin-grid admin-grid--compact">
           <label>
             Status
@@ -535,7 +616,14 @@ export function ProjectEntryForm({
         <RepeatableText label="Disciplines *" values={disciplines} onChange={setDisciplines} />
       </fieldset>
 
-      <ImageFields title="Card image *" image={cardImage} onChange={setCardImage} requireSrc requireAlt />
+      <ImageFields
+        title="Card image *"
+        image={cardImage}
+        onChange={setCardImage}
+        onUpload={(file) => uploadAsset(file, 'card')}
+        requireSrc
+        requireAlt
+      />
 
       <fieldset className="admin-fieldset">
         <legend>Detail intro</legend>
@@ -559,7 +647,14 @@ export function ProjectEntryForm({
           <input type="checkbox" checked={useHeroImage} onChange={(event) => setUseHeroImage(event.target.checked)} />
           Add hero image override
         </label>
-        {useHeroImage ? <ImageFields title="Hero image" image={heroImage} onChange={setHeroImage} /> : null}
+        {useHeroImage ? (
+          <ImageFields
+            title="Hero image"
+            image={heroImage}
+            onChange={setHeroImage}
+            onUpload={(file) => uploadAsset(file, 'hero')}
+          />
+        ) : null}
       </fieldset>
 
       <fieldset className="admin-fieldset">
@@ -593,29 +688,35 @@ export function ProjectEntryForm({
         </div>
       </fieldset>
 
-      <fieldset className="admin-fieldset">
-        <legend>Media blocks</legend>
-        <div className="admin-media-actions">
-          {(['video', 'image', 'gallery', 'text'] as MediaType[]).map((type) => (
-            <button type="button" key={type} onClick={() => setMediaBlocks((current) => [...current, newMediaBlock(type)])}>
-              Add {type}
-            </button>
-          ))}
-        </div>
-        <div className="admin-media-list">
-          {mediaBlocks.map((block, index) => (
-            <MediaBlockEditor
-              block={block}
-              index={index}
-              key={index}
-              onChange={(nextBlock) => updateItem(mediaBlocks, setMediaBlocks, index, nextBlock)}
-              onRemove={() => setMediaBlocks((current) => current.filter((_, currentIndex) => currentIndex !== index))}
-              onMoveUp={() => moveItem(mediaBlocks, setMediaBlocks, index, -1)}
-              onMoveDown={() => moveItem(mediaBlocks, setMediaBlocks, index, 1)}
-            />
-          ))}
-        </div>
-      </fieldset>
+      {projectType === 'normal' ? (
+        <fieldset className="admin-fieldset">
+          <legend>Normal media blocks</legend>
+          <p className="admin-help">Add case-study media in the order it should appear on the project page.</p>
+          <div className="admin-media-actions">
+            {(['video', 'image', 'gallery', 'text'] as MediaType[]).map((type) => (
+              <button type="button" key={type} onClick={() => setMediaBlocks((current) => [...current, newMediaBlock(type)])}>
+                Add {type}
+              </button>
+            ))}
+          </div>
+          <div className="admin-media-list">
+            {mediaBlocks.map((block, index) => (
+              <MediaBlockEditor
+                block={block}
+                index={index}
+                key={index}
+                onChange={(nextBlock) => updateItem(mediaBlocks, setMediaBlocks, index, nextBlock)}
+                onRemove={() => setMediaBlocks((current) => current.filter((_, currentIndex) => currentIndex !== index))}
+                onMoveUp={() => moveItem(mediaBlocks, setMediaBlocks, index, -1)}
+                onMoveDown={() => moveItem(mediaBlocks, setMediaBlocks, index, 1)}
+                onUpload={uploadAsset}
+              />
+            ))}
+          </div>
+        </fieldset>
+      ) : (
+        <ScrapbookEditor scrapbook={scrapbook} onChange={setScrapbook} onUpload={uploadAsset} />
+      )}
     </form>
   );
 }
@@ -662,12 +763,14 @@ function ImageFields({
   title,
   image,
   onChange,
+  onUpload,
   requireSrc = false,
   requireAlt = false,
 }: {
   title: string;
   image: ImageForm;
   onChange: (image: ImageForm) => void;
+  onUpload: (file: File) => Promise<string>;
   requireSrc?: boolean;
   requireAlt?: boolean;
 }) {
@@ -676,7 +779,7 @@ function ImageFields({
     if (!file) return;
 
     try {
-      const src = await readImageFile(file);
+      const src = await onUpload(file);
       onChange({
         ...image,
         src,
@@ -722,7 +825,7 @@ function ImageFields({
       {image.src ? (
         <figure className="admin-image-preview">
           <img src={image.src} alt="" />
-          <figcaption>{image.sourceMode === 'upload' ? 'Base64 upload stored in project JSON' : 'URL preview'}</figcaption>
+          <figcaption>{image.sourceMode === 'upload' ? 'Uploaded to project-assets' : 'URL preview'}</figcaption>
         </figure>
       ) : null}
       <label>
@@ -752,6 +855,7 @@ function MediaBlockEditor({
   onRemove,
   onMoveUp,
   onMoveDown,
+  onUpload,
 }: {
   block: MediaForm;
   index: number;
@@ -759,6 +863,7 @@ function MediaBlockEditor({
   onRemove: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onUpload: UploadAsset;
 }) {
   async function handlePosterUpload(event: ChangeEvent<HTMLInputElement>) {
     if (block.type !== 'video') return;
@@ -766,7 +871,7 @@ function MediaBlockEditor({
     if (!file) return;
 
     try {
-      const poster = await readImageFile(file);
+      const poster = await onUpload(file, 'poster');
       onChange({ ...block, poster });
     } catch (error) {
       window.alert(error instanceof Error ? error.message : 'Could not upload that poster image.');
@@ -775,23 +880,16 @@ function MediaBlockEditor({
     }
   }
 
-  async function handlePdfUpload(event: ChangeEvent<HTMLInputElement>) {
-    if (block.type !== 'gallery') return;
+  async function handleVideoUpload(event: ChangeEvent<HTMLInputElement>) {
+    if (block.type !== 'video') return;
     const file = event.target.files?.[0];
     if (!file) return;
 
     try {
-      const src = await readPdfFile(file);
-      onChange({
-        ...block,
-        pdf: {
-          src,
-          name: block.pdf.name || file.name,
-          sourceMode: 'upload',
-        },
-      });
+      const url = await onUpload(file, 'video');
+      onChange({ ...block, provider: 'file', url });
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : 'Could not upload that PDF.');
+      window.alert(error instanceof Error ? error.message : 'Could not upload that video.');
     } finally {
       event.target.value = '';
     }
@@ -823,7 +921,11 @@ function MediaBlockEditor({
             <input value={block.url} onChange={(event) => onChange({ ...block, url: event.target.value })} />
           </label>
           <label>
-            Poster URL or base64
+            Upload video file
+            <input type="file" accept="video/*" onChange={handleVideoUpload} />
+          </label>
+          <label>
+            Poster URL or uploaded poster
             <input value={block.poster} onChange={(event) => onChange({ ...block, poster: event.target.value })} />
           </label>
           <label>
@@ -843,7 +945,9 @@ function MediaBlockEditor({
         </>
       ) : null}
 
-      {block.type === 'image' ? <ImageInline image={block} onChange={(image) => onChange({ type: 'image', ...image })} /> : null}
+      {block.type === 'image' ? (
+        <ImageInline image={block} onChange={(image) => onChange({ type: 'image', ...image })} onUpload={(file) => onUpload(file, 'media')} />
+      ) : null}
 
       {block.type === 'gallery' ? (
         <>
@@ -862,60 +966,8 @@ function MediaBlockEditor({
               <option value="masonry">Masonry</option>
               <option value="strip">Strip</option>
               <option value="collage">Collage</option>
-              <option value="scrapbook">Scrapbook</option>
             </select>
           </label>
-          {block.layout === 'scrapbook' ? (
-            <div className="admin-nested">
-              <div className="admin-repeatable__header">
-                <h3>Scrapbook PDF</h3>
-              </div>
-              <p className="admin-help">
-                If a PDF is provided, it will be used as the scrapbook pages. Gallery images are used only when no PDF is provided.
-              </p>
-              <div className="admin-source-toggle" role="group" aria-label="Scrapbook PDF source">
-                <label className="admin-check">
-                  <input
-                    type="radio"
-                    checked={block.pdf.sourceMode === 'url'}
-                    onChange={() => onChange({ ...block, pdf: { ...block.pdf, sourceMode: 'url' } })}
-                  />
-                  URL
-                </label>
-                <label className="admin-check">
-                  <input
-                    type="radio"
-                    checked={block.pdf.sourceMode === 'upload'}
-                    onChange={() => onChange({ ...block, pdf: { ...block.pdf, sourceMode: 'upload' } })}
-                  />
-                  Upload
-                </label>
-              </div>
-              <label>
-                PDF source
-                {block.pdf.sourceMode === 'upload' ? (
-                  <input type="file" accept="application/pdf" onChange={handlePdfUpload} />
-                ) : (
-                  <input
-                    value={block.pdf.src}
-                    onChange={(event) => onChange({ ...block, pdf: { ...block.pdf, src: event.target.value } })}
-                  />
-                )}
-              </label>
-              <label>
-                PDF name
-                <input
-                  value={block.pdf.name}
-                  onChange={(event) => onChange({ ...block, pdf: { ...block.pdf, name: event.target.value } })}
-                />
-              </label>
-              {block.pdf.src ? (
-                <p className="admin-help">
-                  PDF selected{block.pdf.name ? `: ${block.pdf.name}` : ''}. Uploaded PDFs are stored in this project entry.
-                </p>
-              ) : null}
-            </div>
-          ) : null}
           <div className="admin-repeatable">
             <div className="admin-repeatable__header">
               <h3>Gallery images</h3>
@@ -928,6 +980,7 @@ function MediaBlockEditor({
                 <ImageInline
                   image={item}
                   onChange={(image) => updateItem(block.items, (items) => onChange({ ...block, items }), itemIndex, image)}
+                  onUpload={(file) => onUpload(file, 'gallery')}
                 />
                 <button
                   type="button"
@@ -958,13 +1011,142 @@ function MediaBlockEditor({
   );
 }
 
-function ImageInline({ image, onChange }: { image: ImageForm; onChange: (image: ImageForm) => void }) {
+function ScrapbookEditor({
+  scrapbook,
+  onChange,
+  onUpload,
+}: {
+  scrapbook: ScrapbookForm;
+  onChange: (scrapbook: ScrapbookForm) => void;
+  onUpload: UploadAsset;
+}) {
+  async function handlePdfUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const src = await onUpload(file, 'pdf');
+      onChange({
+        ...scrapbook,
+        pdf: {
+          src,
+          name: scrapbook.pdf.name || file.name,
+          sourceMode: 'upload',
+        },
+      });
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Could not upload that PDF.');
+    } finally {
+      event.target.value = '';
+    }
+  }
+
+  return (
+    <fieldset className="admin-fieldset">
+      <legend>Scrapbook</legend>
+      <p className="admin-help">
+        Scrapbook projects use a two-page book viewer on the project page. Add a PDF for the highest quality, or add page images as a fallback.
+      </p>
+      <label>
+        Scrapbook title
+        <input value={scrapbook.title} onChange={(event) => onChange({ ...scrapbook, title: event.target.value })} />
+      </label>
+      <label>
+        Scrapbook caption
+        <input value={scrapbook.caption} onChange={(event) => onChange({ ...scrapbook, caption: event.target.value })} />
+      </label>
+      <div className="admin-nested">
+        <div className="admin-repeatable__header">
+          <h3>Scrapbook PDF</h3>
+        </div>
+        <p className="admin-help">
+          If a PDF is provided, it is used as the scrapbook pages. Page images are used only when no PDF is provided or the PDF cannot load.
+        </p>
+        <div className="admin-source-toggle" role="group" aria-label="Scrapbook PDF source">
+          <label className="admin-check">
+            <input
+              type="radio"
+              checked={scrapbook.pdf.sourceMode === 'url'}
+              onChange={() => onChange({ ...scrapbook, pdf: { ...scrapbook.pdf, sourceMode: 'url' } })}
+            />
+            URL
+          </label>
+          <label className="admin-check">
+            <input
+              type="radio"
+              checked={scrapbook.pdf.sourceMode === 'upload'}
+              onChange={() => onChange({ ...scrapbook, pdf: { ...scrapbook.pdf, sourceMode: 'upload' } })}
+            />
+            Upload
+          </label>
+        </div>
+        <label>
+          PDF source
+          {scrapbook.pdf.sourceMode === 'upload' ? (
+            <input type="file" accept="application/pdf" onChange={handlePdfUpload} />
+          ) : (
+            <input
+              value={scrapbook.pdf.src}
+              onChange={(event) => onChange({ ...scrapbook, pdf: { ...scrapbook.pdf, src: event.target.value } })}
+            />
+          )}
+        </label>
+        <label>
+          PDF name
+          <input
+            value={scrapbook.pdf.name}
+            onChange={(event) => onChange({ ...scrapbook, pdf: { ...scrapbook.pdf, name: event.target.value } })}
+          />
+        </label>
+        {scrapbook.pdf.src ? (
+          <p className="admin-help">
+            PDF selected{scrapbook.pdf.name ? `: ${scrapbook.pdf.name}` : ''}. The project saves the public Storage URL.
+          </p>
+        ) : null}
+      </div>
+
+      <div className="admin-repeatable">
+        <div className="admin-repeatable__header">
+          <h3>Fallback page images</h3>
+          <button type="button" onClick={() => onChange({ ...scrapbook, items: [...scrapbook.items, { ...emptyImage }] })}>
+            Add page
+          </button>
+        </div>
+        {scrapbook.items.map((item, itemIndex) => (
+          <div className="admin-nested" key={itemIndex}>
+            <ImageInline
+              image={item}
+              onChange={(image) => updateItem(scrapbook.items, (items) => onChange({ ...scrapbook, items }), itemIndex, image)}
+              onUpload={(file) => onUpload(file, 'gallery')}
+            />
+            <button
+              type="button"
+              onClick={() => removeItem(scrapbook.items, (items) => onChange({ ...scrapbook, items }), itemIndex, { ...emptyImage })}
+            >
+              Remove page
+            </button>
+          </div>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function ImageInline({
+  image,
+  onChange,
+  onUpload,
+}: {
+  image: ImageForm;
+  onChange: (image: ImageForm) => void;
+  onUpload: (file: File) => Promise<string>;
+}) {
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
     try {
-      const src = await readImageFile(file);
+      const src = await onUpload(file);
       onChange({
         ...image,
         src,
@@ -1009,7 +1191,7 @@ function ImageInline({ image, onChange }: { image: ImageForm; onChange: (image: 
       {image.src ? (
         <figure className="admin-image-preview">
           <img src={image.src} alt="" />
-          <figcaption>{image.sourceMode === 'upload' ? 'Base64 upload' : 'URL preview'}</figcaption>
+          <figcaption>{image.sourceMode === 'upload' ? 'Uploaded to project-assets' : 'URL preview'}</figcaption>
         </figure>
       ) : null}
       <label>
