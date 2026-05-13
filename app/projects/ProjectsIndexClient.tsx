@@ -19,7 +19,17 @@ function isProjectTag(filter: FilterValue): filter is ProjectTag {
   return filter !== allFilter;
 }
 
-export function ProjectsIndexClient({ projects, basePath = '/projects' }: { projects: Project[]; basePath?: string }) {
+export function ProjectsIndexClient({
+  projects,
+  basePath = '/projects',
+  hideMeta = false,
+  hideFilters = false,
+}: {
+  projects: Project[];
+  basePath?: string;
+  hideMeta?: boolean;
+  hideFilters?: boolean;
+}) {
   const [activeFilter, setActiveFilter] = useState<FilterValue>(allFilter);
 
   const tagCounts = useMemo(() => {
@@ -32,26 +42,29 @@ export function ProjectsIndexClient({ projects, basePath = '/projects' }: { proj
   }, [projects]);
 
   const visibleProjects = useMemo(() => {
+    if (hideFilters) return projects;
     if (!isProjectTag(activeFilter)) return projects;
     return projects.filter((project) => project.tags.includes(activeFilter));
-  }, [activeFilter, projects]);
+  }, [activeFilter, hideFilters, projects]);
 
   return (
     <>
-      <div className="project-filters" aria-label="Project filters">
-        {filters.map((filter) => (
-          <button
-            className="project-filter"
-            data-active={activeFilter === filter}
-            type="button"
-            onClick={() => setActiveFilter(filter)}
-            key={filter}
-          >
-            <span>{filter.toUpperCase()}</span>
-            <sup>{tagCounts[filter]}</sup>
-          </button>
-        ))}
-      </div>
+      {!hideFilters ? (
+        <div className="project-filters" aria-label="Project filters">
+          {filters.map((filter) => (
+            <button
+              className="project-filter"
+              data-active={activeFilter === filter}
+              type="button"
+              onClick={() => setActiveFilter(filter)}
+              key={filter}
+            >
+              <span>{filter.toUpperCase()}</span>
+              <sup>{tagCounts[filter]}</sup>
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {visibleProjects.length ? (
         <div className="projects-grid-page">
@@ -75,7 +88,7 @@ export function ProjectsIndexClient({ projects, basePath = '/projects' }: { proj
                   draggable={false}
                 />
               )}
-              <p className="project-meta">{getProjectMeta(project)}</p>
+              {!hideMeta ? <p className="project-meta">{getProjectMeta(project)}</p> : null}
               <h2 className="project-name">{project.title.toUpperCase()}</h2>
             </Link>
           ))}

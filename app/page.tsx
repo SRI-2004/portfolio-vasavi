@@ -10,6 +10,11 @@ const TRAIL_IMAGES = [
   '/images/trail/trail-03.svg',
   '/images/trail/trail-04.svg',
   '/images/trail/trail-05.svg',
+  '/images/trail/trail-06.svg',
+  '/images/trail/trail-07.svg',
+  '/images/trail/trail-08.svg',
+  '/images/trail/trail-09.svg',
+  '/images/trail/trail-10.svg',
 ];
 
 export const revalidate = 60;

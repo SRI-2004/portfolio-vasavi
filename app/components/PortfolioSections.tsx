@@ -59,6 +59,8 @@ const logos = [
   { name: 'Sample logo 02', src: '/images/logos/sample-logo-02.svg' },
   { name: 'Sample logo 03', src: '/images/logos/sample-logo-03.svg' },
   { name: 'Sample logo 04', src: '/images/logos/sample-logo-04.svg' },
+  { name: 'Sample logo 05', src: '/images/logos/sample-logo-05.svg' },
+  { name: 'Sample logo 06', src: '/images/logos/sample-logo-06.svg' },
 ];
 
 const portfolioMotion = {
@@ -211,8 +213,6 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
 
   return (
     <main ref={rootRef} className="portfolio-motion relative z-10 bg-transparent text-[#191919]">
-      <div className="about-awards-transition" aria-hidden="true" />
-
       <section id="research" className="content-band awards-section" data-education-section>
         <div className="awards-inner">
           <div className="awards-layout">

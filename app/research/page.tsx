@@ -13,7 +13,7 @@ export default async function ResearchPage() {
       <Navigation activeItem="research" />
 
       <main id="research" className="projects-page__main public-page-main">
-        <ProjectsIndexClient projects={projects} basePath="/research" />
+        <ProjectsIndexClient projects={projects} basePath="/research" hideMeta hideFilters />
       </main>
 
       <PublicFooter />

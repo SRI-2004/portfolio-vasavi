@@ -20,18 +20,6 @@ export default async function PlayPage() {
       <Navigation activeItem="play" />
 
       <main className="play-page__main public-page-main">
-        <header className="play-page__header">
-          <p>Play</p>
-          <h1>{playPage?.detail.headline || playPage?.title || 'Play'}</h1>
-          {playPage?.detail.summary?.length ? (
-            <div>
-              {playPage.detail.summary.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-          ) : null}
-        </header>
-
         {media.length ? (
           <section className="play-page__media" aria-label="Play media">
             <ProjectMediaBlocks blocks={media} />

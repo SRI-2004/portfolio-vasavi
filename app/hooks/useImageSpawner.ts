@@ -75,7 +75,7 @@ export function useImageSpawner({
         const scatterAngle = Number.isFinite(pointerAngle)
           ? pointerAngle + (Math.random() - 0.5) * 0.85
           : fallbackAngle;
-        const rotation = (Math.random() - 0.5) * 22;
+        const rotation = 0;
         const scale = 0.96 + Math.random() * 0.14;
 
         trailStateRef.current[index] = {
@@ -85,9 +85,9 @@ export function useImageSpawner({
           rotation,
           scale,
           scatterAngle,
-          scatterDistance: 360 + Math.random() * 360,
+          scatterDistance: 520 + Math.random() * 420,
           depth: -260 + Math.random() * 620,
-          tilt: 10 + Math.random() * 20,
+          tilt: 0,
         };
 
         gsap.killTweensOf(element);
@@ -99,7 +99,7 @@ export function useImageSpawner({
           z: 0,
           rotationX: 0,
           rotationY: 0,
-          rotationZ: rotation,
+          rotationZ: 0,
           filter: 'blur(0px)',
           opacity: 0,
           transformOrigin: '50% 50%',
@@ -109,7 +109,7 @@ export function useImageSpawner({
         gsap.fromTo(
           element,
           {
-            rotation: rotation,
+            rotation: 0,
             scale: scale * 0.72,
             opacity: 0,
           },

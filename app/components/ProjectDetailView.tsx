@@ -23,6 +23,8 @@ function getRenderableMedia(project: Project) {
 
 export function ProjectDetailView({ project, activeItem }: { project: Project; activeItem: ProjectSection }) {
   const media = getRenderableMedia(project);
+  const showProjectMeta = activeItem !== 'research';
+  const headline = project.detail.headline.trim();
 
   return (
     <div className="project-case-page public-page-shell bg-white text-[#050505]">
@@ -32,16 +34,20 @@ export function ProjectDetailView({ project, activeItem }: { project: Project; a
         <aside className="project-case__sidebar">
           <div>
             <h1>{project.title}</h1>
-            <p className="project-case__client">
-              {[project.detail.client, project.detail.year].filter(Boolean).join(', ')}
-            </p>
-            <p className="project-case__categories">
-              {(project.detail.categories || project.disciplines).join(', ')}
-            </p>
+            {showProjectMeta ? (
+              <>
+                <p className="project-case__client">
+                  {[project.detail.client, project.detail.year].filter(Boolean).join(', ')}
+                </p>
+                <p className="project-case__categories">
+                  {(project.detail.categories || project.disciplines).join(', ')}
+                </p>
+              </>
+            ) : null}
           </div>
 
           <section className="project-case__intro">
-            <h2>{project.detail.headline}</h2>
+            {headline ? <h2>{headline}</h2> : null}
             {project.detail.summary.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}

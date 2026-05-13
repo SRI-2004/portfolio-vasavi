@@ -10,9 +10,9 @@ export const introConfig = {
     cardWidth: 'clamp(11rem, 18vw, 21rem)',
   },
   pointerTrail: {
-    poolSize: 8,
-    spawnThreshold: 135,
-    minSpawnMs: 92,
+    poolSize: 7,
+    spawnThreshold: 220,
+    minSpawnMs: 120,
     progressCutoff: 0.85,
   },
   timeline: {
@@ -35,6 +35,6 @@ export const introConfig = {
     scrollLabelFadeStart: 0.48,
     scrollLabelFadeDuration: 0.18,
     scrollLabelOffset: 12,
-    scatterMultiplier: 1.35,
+    scatterMultiplier: 1.5,
   },
 };

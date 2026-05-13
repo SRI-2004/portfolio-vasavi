@@ -90,6 +90,7 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
 
   return (
     <section id="top" ref={sectionRef} className="relative bg-white" style={introVars}>
+      <div id="about" className="about-scroll-anchor" aria-hidden="true" />
       <div
         ref={frameRef}
         className="intro-frame"
@@ -148,7 +149,6 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
         </div>
 
         <div
-          id="about"
           ref={textRef}
           className={`about-transition pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-[var(--page-gutter)] text-white${isDisabled ? ' about-transition--static' : ''}`}
           style={isDisabled ? { opacity: 1, transform: 'none' } : { opacity: 0, transform: 'translateY(28px)' }}
