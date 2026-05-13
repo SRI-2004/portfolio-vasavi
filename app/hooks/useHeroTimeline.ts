@@ -175,6 +175,7 @@ export function useHeroTimeline({
               scale: depthScale,
               opacity: opacity * (1 - fade),
               filter: `blur(${Math.abs(z) * 0.004 * depth + fade * 5}px)`,
+              zIndex: state.zIndex ?? index,
               transformPerspective: 1400,
               transformOrigin: '50% 50%',
             });

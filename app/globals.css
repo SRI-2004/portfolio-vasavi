@@ -183,7 +183,6 @@ img {
   left: 0;
   top: 0;
   width: var(--intro-card-width);
-  aspect-ratio: 16 / 10;
   opacity: 0;
   will-change: transform, opacity, filter;
 }
@@ -193,7 +192,7 @@ img {
   height: 100%;
   border: 1px solid rgba(25, 25, 25, 0.1);
   border-radius: 18px;
-  object-fit: cover;
+  object-fit: contain;
   box-shadow: 0 24px 60px rgba(25, 25, 25, 0.18);
 }
 

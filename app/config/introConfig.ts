@@ -7,10 +7,11 @@ export const introConfig = {
     stageMax: '92rem',
     stageHeight: 'min(68svh, 44rem)',
     stageRadius: '1.375rem',
-    cardWidth: 'clamp(11rem, 18vw, 21rem)',
+    cardWidth: 'clamp(10.4rem, 17.6vw, 20.8rem)',
   },
   pointerTrail: {
-    poolSize: 7,
+    poolSize: 10,
+    visibleLimit: 5,
     spawnThreshold: 220,
     minSpawnMs: 120,
     progressCutoff: 0.85,

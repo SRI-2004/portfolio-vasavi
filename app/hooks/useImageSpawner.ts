@@ -14,6 +14,7 @@ export interface TrailImageState {
   scatterY?: number;
   depth: number;
   tilt: number;
+  zIndex?: number;
 }
 
 interface UseImageSpawnerOptions {
@@ -34,6 +35,7 @@ export function useImageSpawner({
   const lastSpawnPos = useRef({ x: 0, y: 0 });
   const currentIndexRef = useRef(0);
   const hasSpawnedRef = useRef(false);
+  const spawnOrderRef = useRef(0);
 
   const spawnImage = useCallback(
     (x: number, y: number) => {
@@ -68,6 +70,8 @@ export function useImageSpawner({
       const element = elements[index];
 
       if (element) {
+        spawnOrderRef.current += 1;
+        const spawnOrder = spawnOrderRef.current;
         const width = bounds?.width ?? window.innerWidth;
         const height = bounds?.height ?? window.innerHeight;
         const pointerAngle = Math.atan2(localY - height / 2, localX - width / 2);
@@ -88,6 +92,7 @@ export function useImageSpawner({
           scatterDistance: 520 + Math.random() * 420,
           depth: -260 + Math.random() * 620,
           tilt: 0,
+          zIndex: spawnOrder,
         };
 
         gsap.killTweensOf(element);
@@ -102,6 +107,7 @@ export function useImageSpawner({
           rotationZ: 0,
           filter: 'blur(0px)',
           opacity: 0,
+          zIndex: spawnOrder,
           transformOrigin: '50% 50%',
           transformPerspective: 1400,
         });
@@ -121,6 +127,31 @@ export function useImageSpawner({
             overwrite: 'auto',
           }
         );
+
+        const visibleLimit = introConfig.pointerTrail.visibleLimit;
+        const activeStates = trailStateRef.current
+          .map((state, stateIndex) => ({ state, stateIndex }))
+          .filter(({ state }) => state?.active)
+          .sort((a, b) => (a.state.zIndex ?? 0) - (b.state.zIndex ?? 0));
+
+        if (activeStates.length > visibleLimit) {
+          activeStates.slice(0, activeStates.length - visibleLimit).forEach(({ stateIndex }) => {
+            trailStateRef.current[stateIndex] = {
+              ...trailStateRef.current[stateIndex],
+              active: false,
+            };
+
+            const oldElement = elements[stateIndex];
+            if (!oldElement || oldElement === element) return;
+
+            gsap.to(oldElement, {
+              opacity: 0,
+              duration: 0.18,
+              ease: 'power2.out',
+              overwrite: 'auto',
+            });
+          });
+        }
       }
 
       currentIndexRef.current = (currentIndexRef.current + 1) % maxImages;

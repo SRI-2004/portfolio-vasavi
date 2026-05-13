@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, useEffect, useRef } from 'react';
+import { type CSSProperties, type SyntheticEvent, useEffect, useRef } from 'react';
 import { useHeroTimeline } from '@/app/hooks/useHeroTimeline';
 import { useImageSpawner, type TrailImageState } from '@/app/hooks/useImageSpawner';
 import { usePointer } from '@/app/context/PointerContext';
@@ -16,6 +16,15 @@ const ABOUT_LINES = [
   'Vasavi Sridhar is an inter-disciplinary designer whose practice seamlessly integrates emerging materials, textile systems, and sustainable strategies.',
   'Her unique approach is research-led, weaving biodesign, material innovation, and fashion, anchored by a strong foundation in visual storytelling.',
 ];
+
+function applyTrailCardRatio(event: SyntheticEvent<HTMLImageElement>) {
+  const image = event.currentTarget;
+  const parent = image.parentElement;
+  const { naturalWidth, naturalHeight } = image;
+
+  if (!parent || !naturalWidth || !naturalHeight) return;
+  parent.style.aspectRatio = `${naturalWidth} / ${naturalHeight}`;
+}
 
 export function IntroTrailSection({ images }: IntroTrailSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -130,6 +139,7 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
                         alt=""
                         aria-hidden="true"
                         draggable={false}
+                        onLoad={applyTrailCardRatio}
                       />
                     </div>
                   );
