@@ -18,7 +18,7 @@ export const introConfig = {
     progressCutoff: 0.85,
   },
   timeline: {
-    pinDistance: '+=180%',
+    pinDistance: '+=140%',
     depthEnd: 0.3,
     disperseStart: 0.1,
     disperseDuration: 0.42,
@@ -26,6 +26,8 @@ export const introConfig = {
     fadeDuration: 0.16,
     chromeFadeStart: 0.5,
     chromeFadeDuration: 0.18,
+    frameFadeStart: 0.72,
+    frameFadeDuration: 0.2,
     scrollLabelFadeStart: 0.48,
     scrollLabelFadeDuration: 0.18,
     scrollLabelOffset: 12,
