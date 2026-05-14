@@ -17,6 +17,11 @@ const ABOUT_LINES = [
   'Her unique approach is research-led, weaving biodesign, material innovation, and fashion, anchored by a strong foundation in visual storytelling.',
 ];
 
+const PHONE_ABOUT_LINES = [
+  'Inter-disciplinary designer working across emerging materials, textile systems, and sustainability.',
+  'Research-led practice spanning biodesign, material innovation, fashion, and visual storytelling.',
+];
+
 const PHONE_CARD_POSITIONS = [
   { left: '7%', top: '9%', width: '46%' },
   { left: '43%', top: '16%', width: '43%' },
@@ -251,8 +256,17 @@ function AboutSection() {
       <div className="about-reveal">
         <div className="about-copy">
           <p className="about-kicker">About</p>
-          <p className="about-heading">{ABOUT_LINES[0]}</p>
-          <p className="about-support">{ABOUT_LINES[1]}</p>
+          <div className="about-copy-desktop">
+            <p className="about-heading">{ABOUT_LINES[0]}</p>
+            <p className="about-support">{ABOUT_LINES[1]}</p>
+          </div>
+          <div className="about-copy-phone">
+            {PHONE_ABOUT_LINES.map((line) => (
+              <p className="about-phone-line" key={line}>
+                {line}
+              </p>
+            ))}
+          </div>
           <a className="resume-button" href={resumeUrl} download>
             RESUME
           </a>

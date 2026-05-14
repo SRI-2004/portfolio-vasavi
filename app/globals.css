@@ -1802,6 +1802,10 @@ img {
   max-width: 46rem;
 }
 
+.about-copy-phone {
+  display: none;
+}
+
 .about-kicker {
   margin-bottom: 1rem;
   color: rgba(255, 255, 255, 0.58);
@@ -1887,16 +1891,38 @@ img {
     max-width: none;
   }
 
+  .about-copy-desktop {
+    display: none;
+  }
+
+  .about-copy-phone {
+    display: grid;
+    gap: 1.05rem;
+  }
+
+  .about-kicker {
+    margin-bottom: 1.4rem;
+    color: #f5f5f1;
+    font-size: clamp(2.15rem, 12vw, 3.7rem);
+    font-weight: 800;
+    line-height: 1.02;
+  }
+
+  .about-phone-line {
+    max-width: 22rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.95rem, 4vw, 1.12rem);
+    font-weight: 430;
+    line-height: 1.15;
+  }
+
   .about-heading,
   .about-support {
     max-width: none;
   }
 
   .about-image-wrap {
-    width: min(100%, 22rem);
-    min-width: 0;
-    justify-self: start;
-    order: -1;
+    display: none;
   }
 }
 
