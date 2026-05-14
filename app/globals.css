@@ -204,6 +204,11 @@ img {
   background: rgba(25, 25, 25, 0.18);
 }
 
+.intro-scroll-space {
+  height: clamp(45rem, 150vh, 90rem);
+  pointer-events: none;
+}
+
 .phone-intro {
   min-height: 100svh;
   padding: calc(var(--nav-height) + 1rem) var(--page-gutter) 2.5rem;
@@ -1782,8 +1787,10 @@ img {
 }
 
 .about-section {
+  --about-overlap: clamp(14rem, 32vh, 24rem);
   position: relative;
-  padding: clamp(5rem, 9vw, 8rem) var(--page-gutter);
+  margin-top: calc(var(--about-overlap) * -1);
+  padding: calc(clamp(5rem, 9vw, 8rem) + var(--about-overlap)) var(--page-gutter) clamp(5rem, 9vw, 8rem);
   background: #191919;
   color: #f5f5f1;
   scroll-margin-top: var(--nav-height);
@@ -1874,6 +1881,7 @@ img {
 
 @media (max-width: 767px) {
   .about-section {
+    margin-top: 0;
     padding-block: clamp(3.5rem, 12vw, 5rem);
   }
 

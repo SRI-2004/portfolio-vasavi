@@ -240,6 +240,7 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
         </div>
       </div>
 
+      <div className="intro-scroll-space" aria-hidden="true" />
       <AboutSection />
     </section>
   );

@@ -165,7 +165,7 @@ export function useHeroTimeline({
         start: 'top top',
         end: frame ? introConfig.timeline.pinDistance : 'bottom bottom',
         pin: frame || undefined,
-        pinSpacing: Boolean(frame),
+        pinSpacing: false,
         anticipatePin: 1,
         scrub: true,
         invalidateOnRefresh: true,
