@@ -95,6 +95,11 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
     setPhoneVisibleImages([0]);
 
     const timer = window.setInterval(() => {
+      if (phoneImageIndexRef.current >= images.length - 1) {
+        window.clearInterval(timer);
+        return;
+      }
+
       phoneImageIndexRef.current += 1;
       const nextImageIndex = phoneImageIndexRef.current;
 
@@ -146,7 +151,7 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
         <div className="phone-intro">
           <div className="phone-trail" aria-hidden="true">
             {phoneVisibleImages.map((imageSequence, visibleIndex) => {
-              const image = images[imageSequence % images.length];
+              const image = images[imageSequence];
               const position = PHONE_CARD_POSITIONS[visibleIndex % PHONE_CARD_POSITIONS.length];
 
               return (

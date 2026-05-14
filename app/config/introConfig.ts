@@ -5,7 +5,7 @@ export const introConfig = {
     navHeight: 'clamp(3.5rem, 5vw, 4.75rem)',
     navPillHeight: 'clamp(2.25rem, 3vw, 2.5rem)',
     stageMax: '92rem',
-    stageHeight: 'min(68svh, 44rem)',
+    stageHeight: 'min(58svh, 34rem)',
     stageRadius: '1.375rem',
     cardWidth: 'clamp(10.4rem, 17.6vw, 20.8rem)',
   },
