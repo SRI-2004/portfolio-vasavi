@@ -1903,7 +1903,7 @@ img {
   .about-kicker {
     margin-bottom: 1.4rem;
     color: #f5f5f1;
-    font-size: clamp(2.15rem, 12vw, 3.7rem);
+    font-size: clamp(1.5rem, 12vw, 3.7rem);
     font-weight: 800;
     line-height: 1.02;
   }
