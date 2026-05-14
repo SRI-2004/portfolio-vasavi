@@ -149,9 +149,9 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
       <section id="top" ref={sectionRef} className="relative bg-white" style={introVars}>
         <div className="phone-intro">
           <div className="phone-trail" aria-hidden="true">
-            {phoneVisibleImages.map((imageSequence, visibleIndex) => {
+            {phoneVisibleImages.map((imageSequence) => {
               const image = images[imageSequence];
-              const position = PHONE_CARD_POSITIONS[visibleIndex % PHONE_CARD_POSITIONS.length];
+              const position = PHONE_CARD_POSITIONS[imageSequence % PHONE_CARD_POSITIONS.length];
 
               return (
                 <div
