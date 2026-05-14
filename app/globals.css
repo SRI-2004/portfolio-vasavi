@@ -1904,7 +1904,7 @@ img {
     margin-bottom: 1.4rem;
     color: #f5f5f1;
     font-size: clamp(0.95rem, 8vw, 1rem);
-    font-weight: 250;
+    font-weight: 100;
     line-height: 1.02;
   }
 
