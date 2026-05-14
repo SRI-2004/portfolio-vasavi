@@ -1909,11 +1909,21 @@ img {
   }
 
   .about-phone-line {
-    max-width: 22rem;
     color: rgba(255, 255, 255, 0.9);
-    font-size: clamp(0.95rem, 4vw, 1.12rem);
     font-weight: 430;
-    line-height: 1.15;
+    line-height: 1.16;
+  }
+
+  .about-phone-line--primary {
+    max-width: 24rem;
+    font-size: clamp(1.25rem, 6.2vw, 2rem);
+    font-weight: 520;
+  }
+
+  .about-phone-line--secondary {
+    max-width: 22rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(0.95rem, 4.1vw, 1.12rem);
   }
 
   .about-heading,
