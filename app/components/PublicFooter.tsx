@@ -1,6 +1,6 @@
 const footerLinks = [
-  { label: 'LinkedIn', href: '#' },
-  { label: 'Instagram', href: '#' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/vasavi-sridhar/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/vasavisridhar' },
   { label: 'Mail', href: 'mailto:vasavi9c@gmail.com' },
 ];
 

@@ -213,6 +213,53 @@ img {
   background: rgba(25, 25, 25, 0.18);
 }
 
+.phone-intro {
+  min-height: 100svh;
+  padding: calc(var(--nav-height) + 1rem) var(--page-gutter) 2.5rem;
+  background: #FFFFFF;
+}
+
+.phone-trail {
+  position: relative;
+  min-height: calc(100svh - var(--nav-height) - 3.5rem);
+  overflow: hidden;
+}
+
+.phone-trail-card {
+  position: absolute;
+  opacity: 0;
+  animation: phoneTrailIn 0.42s ease forwards;
+}
+
+.phone-trail-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(25, 25, 25, 0.1);
+  border-radius: 18px;
+  object-fit: contain;
+  box-shadow: 0 18px 42px rgba(25, 25, 25, 0.16);
+  user-select: none;
+}
+
+.phone-about {
+  min-height: 100svh;
+  padding-inline: var(--page-gutter);
+  background: #191919;
+  color: #f5f5f1;
+}
+
+@keyframes phoneTrailIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 767px) {
   .site-nav__inner {
     min-height: auto;
@@ -247,7 +294,7 @@ img {
   position: relative;
   margin: 0 auto;
   width: min(100% - var(--page-gutter) * 2, var(--content-max));
-  padding-block: 5.75rem;
+  padding-block: clamp(3rem, 5vw, 4.75rem);
 }
 
 .portfolio-motion {
@@ -264,21 +311,12 @@ img {
   flex: 1 0 auto;
 }
 
-.section-kicker {
-  margin-bottom: 2rem;
-  color: rgba(25, 25, 25, 0.58);
-  font-size: 0.78rem;
-  font-weight: 700;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .awards-section {
   width: 100%;
   max-width: none;
   background: #FFFFFF;
   color: #050505;
-  padding-block: clamp(4rem, 7vw, 6.25rem);
+  padding-block: clamp(3.25rem, 5.4vw, 4.75rem);
 }
 
 .awards-inner {
@@ -296,21 +334,16 @@ img {
   justify-content: start;
 }
 
+.awards-intro-column {
+  padding-top: clamp(4.8rem, 6.9vw, 6rem);
+}
+
 .awards-heading {
   color: #050505;
   font-size: clamp(2rem, 2.7vw, 3rem);
   font-weight: 800;
   line-height: 1.05;
   text-transform: uppercase;
-}
-
-.awards-intro {
-  max-width: 17rem;
-  margin-top: clamp(1.7rem, 2.6vw, 2.25rem);
-  color: #111;
-  font-size: clamp(0.88rem, 1vw, 1rem);
-  font-weight: 430;
-  line-height: 1.12;
 }
 
 .awards-list {
@@ -345,11 +378,14 @@ img {
     gap: 2.2rem;
   }
 
+  .awards-intro-column {
+    padding-top: 0;
+  }
+
   .awards-list {
     padding-top: 0;
   }
 
-  .awards-intro,
   .awards-item {
     max-width: 42rem;
   }
@@ -387,7 +423,7 @@ img {
 .work-section {
   --project-gap: clamp(1.25rem, 1.7vw, 1.5rem);
   overflow: visible;
-  padding-top: clamp(4rem, 6vw, 5rem);
+  padding-top: clamp(2.75rem, 4vw, 3.75rem);
 }
 
 .work-heading {
@@ -1683,6 +1719,7 @@ img {
 
   .project-case {
     width: min(100% - var(--page-gutter) * 2, var(--content-max));
+    padding-top: clamp(8rem, 30vw, 10rem);
     padding-bottom: 1.5rem;
   }
 
@@ -1749,7 +1786,7 @@ img {
 
 @media (min-width: 768px) {
   .content-band {
-    padding-block: 8rem;
+    padding-block: clamp(4.5rem, 6vw, 6rem);
   }
 }
 

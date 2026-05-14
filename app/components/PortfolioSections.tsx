@@ -8,18 +8,15 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getProjectMeta, type Project } from '@/app/data/projects';
 import { prefersReducedMotion } from '@/app/utils/helpers';
 
-const awardsIntro =
-  'My practice spans from apparel/textile design to product design, material innovation, and design research. While my work is aesthetically diverse, my projects weave humanity and sciences through innovative solutions.';
-
 const awardsColumns = [
   [
     {
       text: 'Won Honorable Mention award with a cash prize by Taiwan International Student Design Competition-2024 in the Product Design category (2024)',
-      href: 'https://www.tisdc.org/wp-content/uploads/2024_Yearbook.pdf',
+
     },
     {
       text: 'Won the Himalayan Wool innovation challenge initiated by Echostream, UNDP Accelerator Lab in partnership with the People of Japan project, in the scouring category. (2025)',
-      href: 'https://wonder.mmm.page/',
+      href: 'https://www.linkedin.com/posts/undp-in-india_wonder-activity-7254009407083032577-Vr9T',
     },
     {
       text: 'Pursuing independent research on biomaterials. Worked on creating a leather alternative (patent pending) “Pseudocorium”.',
@@ -40,7 +37,7 @@ const awardsColumns = [
     },
     {
       text: 'Created a Sustainable Footwear installation to be published on an interactive website as a part of the Millipede Project funded by the British Council in collaboration with The National Theatre of Scotland (2022)',
-      href: 'https://www.nationaltheatrescotland.com/events/millipede',
+      href: 'https://www.thinkarts.co.in/millipede.html',
     },
     {
       text: 'Finalist, Design-a-Bag Competition(2O21), organized by APLF, Hongkong',
@@ -213,6 +210,8 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
 
   return (
     <main ref={rootRef} className="portfolio-motion relative z-10 bg-transparent text-[#191919]">
+      <div className="about-awards-transition" aria-hidden="true" />
+
       <section id="research" className="content-band awards-section" data-education-section>
         <div className="awards-inner">
           <div className="awards-layout">
@@ -221,7 +220,6 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
                 AWARDS &<br />
                 RECOGNITION
               </h2>
-              <p className="awards-intro">{awardsIntro}</p>
             </div>
 
             {awardsColumns.map((column, columnIndex) => (
@@ -244,7 +242,6 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
       </section>
 
       <section id="play" className="content-band overflow-hidden" data-logo-section>
-        <div className="section-kicker">Collaborations</div>
         <div className="logo-reel" aria-label="Organizations placeholder reel">
           <div className="logo-track" data-logo-track>
             {[...logos, ...logos].map((logo, index) => (
@@ -258,7 +255,7 @@ export function PortfolioSections({ projects }: { projects: Project[] }) {
 
       <section id="projects" className="content-band work-section" data-feature-section>
         <Link href="/projects" className="work-heading">
-          Projects
+          PROJECTS
         </Link>
 
         <div className="project-carousel" data-project-carousel style={carouselStyle}>
