@@ -18,11 +18,11 @@ const ABOUT_LINES = [
 ];
 
 const PHONE_CARD_POSITIONS = [
-  { left: '16%', top: '12%', width: '45%' },
-  { left: '34%', top: '18%', width: '43%' },
-  { left: '22%', top: '31%', width: '42%' },
-  { left: '40%', top: '39%', width: '39%' },
-  { left: '18%', top: '50%', width: '46%' },
+  { left: '7%', top: '9%', width: '46%' },
+  { left: '43%', top: '16%', width: '43%' },
+  { left: '17%', top: '36%', width: '42%' },
+  { left: '51%', top: '46%', width: '39%' },
+  { left: '10%', top: '60%', width: '48%' },
 ];
 
 function applyTrailCardRatio(event: SyntheticEvent<HTMLImageElement>) {
@@ -240,7 +240,6 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
         </div>
       </div>
 
-      <div className="intro-scroll-space" aria-hidden="true" />
       <AboutSection />
     </section>
   );

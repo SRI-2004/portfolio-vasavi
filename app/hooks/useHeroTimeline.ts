@@ -74,6 +74,11 @@ export function useHeroTimeline({
           1,
           (progress - timeline.chromeFadeStart) / timeline.chromeFadeDuration
         );
+        const frameFade = gsap.utils.clamp(
+          0,
+          1,
+          (progress - timeline.frameFadeStart) / timeline.frameFadeDuration
+        );
 
         gsap.set(hero, {
           scale: 1 + depth * 0.04 + chromeFade * 0.035,
@@ -143,6 +148,12 @@ export function useHeroTimeline({
         };
 
         renderCards(pointerImageElements, pointerTrailStateRef, 0.82);
+
+        if (frame) {
+          gsap.set(frame, {
+            autoAlpha: 1 - frameFade,
+          });
+        }
 
         if (scrollLabel) {
           const scrollLabelFade = gsap.utils.clamp(
