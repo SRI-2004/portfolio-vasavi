@@ -144,16 +144,6 @@ img {
   padding-block: calc(var(--nav-height) + var(--page-gutter)) var(--page-gutter);
 }
 
-.about-scroll-anchor {
-  position: absolute;
-  top: 72%;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  scroll-margin-top: var(--nav-height);
-  pointer-events: none;
-}
-
 .intro-stack {
   min-height: calc(100svh - var(--nav-height) - var(--page-gutter) * 2);
   display: grid;
@@ -169,8 +159,9 @@ img {
 
 .intro-stage {
   position: relative;
-  width: min(100%, var(--intro-stage-max));
-  height: var(--intro-stage-height);
+  width: min(100%, var(--intro-stage-max), calc(var(--intro-stage-available-height) * 2));
+  height: auto;
+  aspect-ratio: var(--intro-stage-aspect);
   overflow: hidden;
   border: 1px solid rgba(25, 25, 25, 0.12);
   border-radius: var(--intro-radius);
@@ -240,13 +231,6 @@ img {
   object-fit: contain;
   box-shadow: 0 18px 42px rgba(25, 25, 25, 0.16);
   user-select: none;
-}
-
-.phone-about {
-  min-height: 100svh;
-  padding-inline: var(--page-gutter);
-  background: #191919;
-  color: #f5f5f1;
 }
 
 @keyframes phoneTrailIn {
@@ -1797,16 +1781,17 @@ img {
   }
 }
 
-.about-transition {
-  background: transparent;
-}
-
-.about-transition--static {
+.about-section {
+  position: relative;
+  padding: clamp(5rem, 9vw, 8rem) var(--page-gutter);
   background: #191919;
+  color: #f5f5f1;
+  scroll-margin-top: var(--nav-height);
 }
 
 .about-reveal {
   width: min(100%, var(--content-max));
+  margin-inline: auto;
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(16rem, 0.48fr);
   align-items: center;
@@ -1888,10 +1873,13 @@ img {
 }
 
 @media (max-width: 767px) {
+  .about-section {
+    padding-block: clamp(3.5rem, 12vw, 5rem);
+  }
+
   .about-reveal {
     grid-template-columns: 1fr;
     gap: 2rem;
-    padding-block: calc(var(--nav-height) + 1.5rem) 2rem;
   }
 
   .about-copy {
@@ -1918,32 +1906,6 @@ img {
 
   .intro-stack {
     min-height: calc(100svh - var(--nav-height) - clamp(1rem, 3vh, 2rem));
-  }
-
-  .intro-stage {
-    height: min(56svh, 34rem);
-  }
-
-  .about-reveal {
-    gap: clamp(1.5rem, 4vw, 4.5rem);
-  }
-
-  .about-heading {
-    font-size: clamp(1.55rem, 2vw, 2.15rem);
-  }
-
-  .about-support {
-    margin-top: clamp(1rem, 1.8vw, 1.6rem);
-    font-size: clamp(1.05rem, 1.65vw, 1.55rem);
-  }
-
-  .resume-button {
-    margin-top: clamp(1.2rem, 2vw, 1.8rem);
-  }
-
-  .about-image-wrap {
-    width: min(28vw, 21rem);
-    min-width: min(15rem, 28vw);
   }
 
   .awards-section {

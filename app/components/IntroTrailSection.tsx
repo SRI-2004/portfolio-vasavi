@@ -41,7 +41,6 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
   const stageGridRef = useRef<HTMLDivElement>(null);
   const stageGlowRef = useRef<HTMLDivElement>(null);
   const pointerImagesRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
   const scrollLabelRef = useRef<HTMLDivElement>(null);
   const pointerTrailStateRef = useRef<TrailImageState[]>([]);
   const scrollProgressRef = useRef(0);
@@ -57,7 +56,8 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
     '--nav-height': introConfig.cssVars.navHeight,
     '--nav-pill-height': introConfig.cssVars.navPillHeight,
     '--intro-stage-max': introConfig.cssVars.stageMax,
-    '--intro-stage-height': introConfig.cssVars.stageHeight,
+    '--intro-stage-aspect': introConfig.cssVars.stageAspect,
+    '--intro-stage-available-height': introConfig.cssVars.stageAvailableHeight,
     '--intro-card-width': introConfig.cssVars.cardWidth,
     '--intro-radius': introConfig.cssVars.stageRadius,
   } as CSSProperties;
@@ -138,7 +138,6 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
     stageGridRef,
     stageGlowRef,
     pointerImagesRef,
-    textRef,
     scrollLabelRef,
     pointerTrailStateRef,
     scrollProgressRef,
@@ -175,33 +174,13 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
           </div>
         </div>
 
-        <div id="about" className="phone-about">
-          <div className="about-reveal">
-            <div className="about-copy">
-              <p className="about-kicker">About</p>
-              <p className="about-heading">{ABOUT_LINES[0]}</p>
-              <p className="about-support">{ABOUT_LINES[1]}</p>
-              <a className="resume-button" href={resumeUrl} download>
-                RESUME
-              </a>
-            </div>
-
-            <div className="about-image-wrap">
-              <img
-                src="/images/about-crystal-dress.svg"
-                alt="Crystal and black sculptural textile form"
-                draggable={false}
-              />
-            </div>
-          </div>
-        </div>
+        <AboutSection />
       </section>
     );
   }
 
   return (
     <section id="top" ref={sectionRef} className="relative bg-white" style={introVars}>
-      <div id="about" className="about-scroll-anchor" aria-hidden="true" />
       <div
         ref={frameRef}
         className="intro-frame"
@@ -259,36 +238,32 @@ export function IntroTrailSection({ images }: IntroTrailSectionProps) {
             <span className="h-px bg-[#191919]/18" />
           </div>
         </div>
+      </div>
 
-        <div
-          ref={textRef}
-          className={`about-transition pointer-events-none absolute inset-0 z-30 flex items-center justify-center px-[var(--page-gutter)] text-white${isDisabled ? ' about-transition--static' : ''}`}
-          style={isDisabled ? { opacity: 1, transform: 'none' } : { opacity: 0, transform: 'translateY(28px)' }}
-        >
-          <div className="about-reveal">
-            <div className="about-copy" data-about-copy>
-              <p className="about-kicker" data-about-line>
-                About
-              </p>
-              <p className="about-heading" data-about-line>
-                {ABOUT_LINES[0]}
-              </p>
-              <p className="about-support" data-about-line>
-                {ABOUT_LINES[1]}
-              </p>
-              <a className="resume-button pointer-events-auto" href={resumeUrl} download data-about-action>
-                RESUME
-              </a>
-            </div>
+      <AboutSection />
+    </section>
+  );
+}
 
-            <div className="about-image-wrap" data-about-image>
-              <img
-                src="/images/about-crystal-dress.svg"
-                alt="Crystal and black sculptural textile form"
-                draggable={false}
-              />
-            </div>
-          </div>
+function AboutSection() {
+  return (
+    <section id="about" className="about-section">
+      <div className="about-reveal">
+        <div className="about-copy">
+          <p className="about-kicker">About</p>
+          <p className="about-heading">{ABOUT_LINES[0]}</p>
+          <p className="about-support">{ABOUT_LINES[1]}</p>
+          <a className="resume-button" href={resumeUrl} download>
+            RESUME
+          </a>
+        </div>
+
+        <div className="about-image-wrap">
+          <img
+            src="/images/about-crystal-dress.svg"
+            alt="Crystal and black sculptural textile form"
+            draggable={false}
+          />
         </div>
       </div>
     </section>
