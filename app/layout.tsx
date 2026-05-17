@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { PointerProvider } from '@/app/context/PointerContext';
+import { ImageProtection } from '@/app/components/ImageProtection';
 import { LenisScroll } from '@/app/components/LenisScroll';
 import './globals.css';
 
@@ -26,6 +27,7 @@ export default function RootLayout({
         <PointerProvider>
           <LenisScroll>{children}</LenisScroll>
         </PointerProvider>
+        <ImageProtection />
         <Analytics />
       </body>
     </html>

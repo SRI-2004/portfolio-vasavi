@@ -10,6 +10,8 @@ type ProjectMediaImageProps = {
   showCaption?: boolean;
 };
 
+const imageZoomEnabled = false;
+
 export function ProjectMediaImage({ src, alt, caption, showCaption = true }: ProjectMediaImageProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -56,7 +58,7 @@ export function ProjectMediaImage({ src, alt, caption, showCaption = true }: Pro
     setDragStart(null);
   }
 
-  const lightbox = isOpen ? (
+  const lightbox = imageZoomEnabled && isOpen ? (
     <div
       className="project-lightbox"
       role="dialog"
@@ -137,11 +139,15 @@ export function ProjectMediaImage({ src, alt, caption, showCaption = true }: Pro
     <>
       <button
         className="project-case__image-button"
+        data-zoom-enabled={imageZoomEnabled}
         type="button"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          if (imageZoomEnabled) setIsOpen(true);
+        }}
+        aria-disabled={!imageZoomEnabled}
         aria-label={`Open image: ${alt}`}
       >
-        <img className="project-case__media-img" src={src} alt={alt} />
+        <img className="project-case__media-img" src={src} alt={alt} draggable={false} />
       </button>
       {showCaption && caption ? <figcaption>{caption}</figcaption> : null}
       {isMounted && lightbox ? createPortal(lightbox, document.body) : null}

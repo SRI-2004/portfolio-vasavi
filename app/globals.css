@@ -48,6 +48,8 @@ a {
 img {
   max-width: 100%;
   height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 /* Cursor trail animations */
@@ -772,6 +774,10 @@ img {
   padding: 0;
   background: transparent;
   cursor: zoom-in;
+}
+
+.project-case__image-button[data-zoom-enabled="false"] {
+  cursor: default;
 }
 
 .project-case__video-frame {
